@@ -1,0 +1,527 @@
+{
+  "days": [
+    {
+      "date": "1/7/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=13920",
+      "fact": {
+        "name": "6.100L Introduction to CS and Programming Using Python",
+        "text": "We learn in this course that computers are actually \"dumb\" machines that will only do exactly the instructions we tell them to do, step by step, and won't guess or infer anything on their own, so when we program we have to think like a chef writing a precise recipe. We think this is a fun and surprising fact because many of us casually assume computers are \"smart,\" but here we see they follow our exact recipe with no intuition, which makes clear why programming is both powerful and sometimes tricky.",
+        "link": "https://www.youtube.com/watch?v=xAcTmDO6NTI&t=240s"
+      },
+      "puzzles": {
+        "scramble": {
+          "clue": "mroaprg",
+          "answer": "program",
+          "hint": "pro _ _ _ _"
+        },
+        "equation": {
+          "clue": "2²+2¹+0⋅2⁰",
+          "answer": "6"
+        },
+        "image": {
+          "clue": "img_6-100l-fall-2022.png",
+          "answer": "EECS"
+        }
+      }
+    },
+    {
+      "date": "1/14/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=5100",
+      "fact": {
+        "name": "3.020: Thermodynamics of Materials",
+        "text": "A hurricane can be thought of as a giant heat engine. A heat engine is something that takes heat and turns part of it into mechanical work. In a hurricane, there is a temperature difference between the warm ocean surface and the much colder air high in the atmosphere, and that difference drives the hurricane's powerful swirling winds.",
+        "link": "https://www.youtube.com/watch?v=tfY40mAOzn8&t=105"
+      },
+      "puzzles": {
+        "scramble": {
+          "clue": "retynop",
+          "answer": "entropy",
+          "hint": "_ _ _ _ opy"
+        },
+        "equation": {
+          "clue": "2³+(314/1000)",
+          "answer": "8.314"
+        },
+        "image": {
+          "clue": "img_8-314.png",
+          "answer": "Thermo"
+        }
+      },
+      "notes": [
+        "https://www.dropbox.com/scl/fi/jbxtc9he0wvmkrqv3yla8/Thermo-Screenshot.png?rlkey=z24f8jwdusy9hcs0u4hkywoei&st=lbev6pn4&dl=0",
+        "2:13-2:45"
+      ]
+    },
+    {
+      "date": "1/21/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=2805",
+      "fact": {
+        "name": "3.054: Cellular Solids: Structure, Properties, and Applications",
+        "text": "Woodpeckers experience incredibly high decelerations!. When their beak hits a tree, it's hundreds/thousand times the force of gravity and yet their brains don't get injured. Scientists measured these impacts and found that even though human brains can be seriously damaged at about 100 g, woodpeckers are able to tolerate much higher g-forces.",
+        "link": "https://www.youtube.com/watch?v=jAdknn031sU&t=105s"
+      },
+      "puzzles": {
+        "rebus": {
+          "clue": "🍯 + 🪮",
+          "answer": "honeycomb",
+          "hint": "honey _ _ _ _"
+        },
+        "scramble": {
+          "clue": "rouops",
+          "answer": "porous",
+          "hint": "por _ _ _"
+        },
+        "image": {
+          "clue": "img_3-054.png",
+          "answer": "Solids"
+        }
+      },
+      "notes": [
+        "https://www.dropbox.com/scl/fi/t9gpqrakwwxkk9gk62nwn/Cellular-Solids-Screenshot.png?rlkey=h37agtnfx6xdrf8xg8oyleqlr&st=klccv2w3&dl=0"
+      ]
+    },
+    {
+      "date": "1/28/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=3060",
+      "fact": {
+        "name": "3.091: Introduction to Solid State Chemistry",
+        "text": "We explore ways in which we may be able to use chemistry to design a cleaner, more energy-efficient future.",
+        "link": "https://www.youtube.com/watch?v=8KQPpl77fuk&t=74s"
+      },
+      "puzzles": {
+        "rebus": {
+          "clue": "🦇 + 🌳",
+          "answer": "battery",
+          "hint": "bat _ _ _ _"
+        },
+        "scramble": {
+          "clue": "styclar",
+          "answer": "crystal",
+          "hint": "_ _ ys _ _ _"
+        },
+        "image": {
+          "clue": "img_3-091_2.png",
+          "answer": "91"
+        }
+      },
+      "notes": [
+        "Note: Image for puzzle is CC BY 3.0 from Bionerd on en.wikipedia.org",
+        "https://en.wikipedia.org/wiki/Periodic_table#/media/File:Pouring_liquid_mercury_bionerd.jpg"
+      ]
+    },
+    {
+      "date": "2/4/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=3060",
+      "fact": {
+        "name": "3.091: Introductino to Solid State Chemistry",
+        "text": "Glass isn't inherently fragile! We can use chemistry to make it much stronger. By changing its composition or treating it (like ion exchange), we introduce internal stresses that prevent cracks from spreading, dramatically improving toughness. So even something as \"brittle\" as glass can be engineered to resist breaking.",
+        "link": "https://www.youtube.com/watch?v=czAWbZLxFNM&t=942"
+      },
+      "puzzles": {
+        "scramble": {
+          "clue": "retoniac",
+          "answer": "reaction",
+          "hint": "re _ _ _ _ _ _"
+        },
+        "equation": {
+          "clue": "(1+2)¹",
+          "answer": "3"
+        },
+        "image": {
+          "clue": "img_3-091.png",
+          "answer": "chem"
+        }
+      },
+      "notes": [
+        "Note: Fact video should play from 15:42-19:00",
+        "Note: Puzzle Image is from the MIT media library",
+        "https://www.dropbox.com/scl/fi/llk7ax955vhg68l9x8itp/3091-Glass.png?rlkey=4xv3iltbld1wfjik32b30jvma&st=onq8n86n&dl=0"
+      ]
+    },
+    {
+      "date": "2/11/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=16192",
+      "fact": {
+        "name": "3.15: Electrical, Optical, and Magnetic Materials and Devices",
+        "text": "Magnetism in materials doesn't just come from electrons moving in a wire! It mainly comes from the electrons inside atoms that behave like tiny magnets themselves.",
+        "link": "https://www.youtube.com/watch?v=moZN2iUuaTw&t=144"
+      },
+      "puzzles": {
+        "scramble": {
+          "clue": "tengam",
+          "answer": "magnet",
+          "hint": "_ _ _ _ et"
+        },
+        "equation": {
+          "clue": "3+(5²-10)/10²",
+          "answer": "3.15"
+        },
+        "image": {
+          "clue": "img_3-15.png",
+          "answer": "MSE"
+        }
+      },
+      "notes": [
+        "Note: If possible, the fact video should start at 2:24 and go to 5:12.  Also note that it should refer to the \"Magnetic Fundamentals\" video",
+        "https://www.dropbox.com/scl/fi/wdfl0ucy1p01dnmtfrx09/315-About-Image.png?rlkey=v7cgxyu7fi5u0xpyumt846xmh&st=qjffd010&dl=0"
+      ]
+    },
+    {
+      "date": "2/18/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=5121",
+      "fact": {
+        "name": "17.486: Japan and East Asian Security",
+        "text": "Even though Japan's population has been shrinking and aging for decades, with birthrates much lower than needed to replace the population, technological advances like robots, artificial intelligence, and 3-D printing could help Japan keep its economy growing and even become a manufacturing leader again, showing that fewer people doesn't automatically mean a weaker country. This flips the common idea that economic success must come from having more workers, and it makes you think about how technology and people work together to shape a country's future."
+      },
+      "puzzles": {
+        "rebus": {
+          "clue": "L+👁️+🐜🐜🐜",
+          "answer": "alliance",
+          "hint": "all _ _ _ _ _"
+        },
+        "mapCoord": {
+          "clue": "34.987108, 135.759616",
+          "answer": "japan"
+        },
+        "equation": {
+          "clue": "15⋅2-13",
+          "answer": "17"
+        }
+      }
+    },
+    {
+      "date": "2/25/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=19342",
+      "fact": {
+        "name": "21G.111 Chinese Calligraphy",
+        "text": "Practice with writing characters doesn't just have to be done with a brush. In this course, one student made a whole piece of wearable fashion that included Chinese calligraphy, blending art and clothing in a creative way you might not expect from a traditional writing class. Using calligraphy in surprising places like this makes the art form feel alive and creative even beyond classic calligraphy tools.",
+        "link": "https://www.youtube.com/watch?v=lZtDo237YgE&t=14s"
+      },
+      "puzzles": {
+        "rebus": {
+          "clue": "N+🗝️",
+          "answer": "inky",
+          "hint": "in _ _"
+        },
+        "mapCoord": {
+          "clue": "31.229808, 121.474139",
+          "answer": "china"
+        },
+        "image": {
+          "clue": "img_21g-111.png",
+          "answer": "21G"
+        }
+      }
+    },
+    {
+      "date": "3/4/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=9172",
+      "fact": {
+        "name": "8.04: Quantum Physics I",
+        "text": "Back in the day, physicists were completely baffled by the photoelectric effect, which is the phenomenon where shining light on a polished metal plate causes it to emit electrons and create a current. The weird part? Just making the light brighter didn't guarantee electrons would be freed, but changing the color (frequency) of the light did. Einstein actually solved this mystery (and helped birth quantum mechanics) by proposing that light doesn't just wash over the metal like a continuous wave. Instead, it travels in tiny, individual packets of energy called photons.",
+        "link": "https://www.youtube.com/watch?v=byEaU9ILHmw&t=46s"
+      },
+      "puzzles": {
+        "rebus": {
+          "clue": "📸 + ⏻",
+          "answer": "photon",
+          "hint": "_ _ _ ton"
+        },
+        "scramble": {
+          "clue": "certlie",
+          "answer": "electric",
+          "hint": "_ _ _ _ _ ric"
+        },
+        "riddle": {
+          "clue": "My famous hair is almost as known as my ideas on time, space, and light. What's my last name?",
+          "answer": "Einstein",
+          "hint": "E=mc²"
+        }
+      }
+    },
+    {
+      "date": "3/11/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=85258",
+      "fact": {
+        "name": "2.008 Design and Manufacturing II",
+        "text": "Know on campus as the \"yo-yo course\"! The yo-yo project has small teams of students experience designing and manufacturing a simple product at scale. Throughout the project experience, students will have a chance to create a new yo-yo design, develop a computer-aided design (CAD) model, computer numerically controlled (CNC) machine tooling for injection molding using computer-aided machining (CAM), create thermoform tooling using additive manufacturing, and operate industrial injection molding and thermoforming machines themselves. This is an iterative process that allows the students to see the implications of their design details all the way through to final production!",
+        "link": "https://ocw.mit.edu/courses/2-008-design-and-manufacturing-ii-spring-2025/pages/yo-yo-project/"
+      },
+      "puzzles": {
+        "rebus": {
+          "clue": "🖥️   ⛑️+ ed   De +🪧",
+          "answer": "Computer Aided Design",
+          "hint": "CAD"
+        },
+        "riddle": {
+          "clue": "Up, down, and back up again. Following the string from which it came...",
+          "answer": "yoyo",
+          "hint": "y _ y _"
+        },
+        "image": {
+          "clue": "img_2-008.png",
+          "answer": "bit",
+          "hint": "drill    _ _ _"
+        }
+      },
+      "notes": [
+        "2008_imagePuzzle.png"
+      ]
+    },
+    {
+      "date": "3/18/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=85353",
+      "fact": {
+        "name": "6.7960 Deep Learning",
+        "text": "This isn’t just a machine learning trick! When similar birds (like puffins with puffins, or cardinals with cardinals) group together, it reflects how the brain works. In a part of the brain called the inferotemporal cortex, similar objects create similar patterns of activity. So the brain naturally groups things based on how alike they look, kind of like its own built-in way of organizing information.",
+        "link": "https://www.youtube.com/watch?v=yUh1fEGGdl4&t=1680"
+      },
+      "puzzles": {
+        "rebus": {
+          "clue": "🐴 + 🐗",
+          "answer": "neighbor",
+          "hint": "(the sound a horse makes)"
+        },
+        "riddle": {
+          "clue": "I am stronger than I look and older than engineering. I glitter in the morning and vanish in the wind.",
+          "answer": "web",
+          "hint": "spiders and the Internet have this in common"
+        },
+        "image": {
+          "clue": "img_6-796.png",
+          "answer": "MAP"
+        }
+      },
+      "notes": [
+        "https://www.dropbox.com/scl/fi/ysrw4jdb11ktu6whxp321/Screenshot-2026-04-21-at-1.38.32-PM.png?rlkey=ndt4gajv0daxeho99jdbrbwfl&st=4y7mn2u4&dl=0"
+      ]
+    },
+    {
+      "date": "3/25/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=16639",
+      "fact": {
+        "name": "Molecular Biology - Part 1: DNA Replication and Repair",
+        "text": "Each cell in your body has about a meter of DNA, and it copies this DNA every time the cell divides to make a new one.",
+        "link": "https://www.youtube.com/watch?v=o_-6JXLYS-k&t=1s"
+      },
+      "puzzles": {
+        "scramble": {
+          "clue": "pntiorelarci",
+          "answer": "replication",
+          "hint": "_ _ _ _ _ _ _ tion"
+        },
+        "riddle": {
+          "clue": "These four letters represent the code of life in alphabetical order (no Python required).",
+          "answer": "ACGT",
+          "hint": "Adenine, Cytosine, Thymine, Guanine"
+        },
+        "equation": {
+          "clue": "4⋅0.07+7",
+          "answer": "7.28"
+        }
+      }
+    },
+    {
+      "date": "4/1/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=17178",
+      "fact": {
+        "name": "7.002 Fundamentals of Experimental Molecular Biology",
+        "text": "In molecular biology, you don't just observe life. You deliberately change DNA to test how life works. In this class, students literally mutate a gene, put it into bacteria, and watch how that tiny change alters a protein's behavior. That means biology at this level is less about memorizing facts and more about designing experiments to prove cause-and-effect in living systems."
+      },
+      "puzzles": {
+        "rebus": {
+          "clue": "π + 🐈🐕",
+          "answer": "pipets",
+          "hint": "_ _ pets"
+        },
+        "scramble": {
+          "clue": "ofsnarrtm",
+          "answer": "transform"
+        },
+        "riddle": {
+          "clue": "Coats are white, liquids bubble, and questions get tested here.",
+          "answer": "lab",
+          "hint": "_ _ _"
+        }
+      }
+    },
+    {
+      "date": "4/8/2026",
+      "courseLink": "https://learn.mit.edu/search?resource=5549",
+      "fact": {
+        "name": "1.018J Ecology I: The Earth System",
+        "text": "The oxygen you breathe is basically \"recycled dinosaur breath\": almost every oxygen molecule in the air has been made and destroyed many times over as it cycles through plants, animals, the ocean, and rocks over millions of years!",
+        "link": "https://ocw.mit.edu/courses/1-018j-ecology-i-the-earth-system-fall-2009/720ffd9ddb139d9b3f080f79079dd25c_MIT1_018JF09_Lec07.pdf"
+      },
+      "puzzles": {
+        "rebus": {
+          "clue": "🚗+🦴",
+          "answer": "carbon",
+          "hint": "car _ _ _"
+        },
+        "scramble": {
+          "clue": "yolecgo",
+          "answer": "ecology",
+          "hint": "eco _ _ _ _"
+        },
+        "equation": {
+          "clue": "1+(9/500)",
+          "answer": "1.018"
+        }
+      },
+      "notes": [
+        "I don't believe there are course videos for this one"
+      ]
+    },
+    {
+      "date": "4/15/2026",
+      "courseLink": "https://learn.mit.edu/search?resource=87056",
+      "fact": {
+        "name": "18.783 Elliptic Curves",
+        "text": "One surprising idea in this course is how elliptic curves can be used to hide a secret number. With today’s computers, trying to guess that number by brute force would take longer than the age of the universe."
+      },
+      "puzzles": {
+        "rebus": {
+          "clue": "⚰️ + 👣 + 📈",
+          "answer": "cryptograph",
+          "hint": "cry _ _ _ _ _ aph"
+        },
+        "riddle": {
+          "clue": "What is the shape of the earth's orbit?",
+          "answer": "ellipse",
+          "hint": "A \"squished\" circle"
+        },
+        "equation": {
+          "clue": "(6²)/2",
+          "answer": "18"
+        }
+      }
+    },
+    {
+      "date": "4/22/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=4346",
+      "fact": {
+        "name": "5.111 Principles of Chemical Science",
+        "text": "One of the most surprising things about the world is that most of what we see and touch is actually made of empty space. Suppose you took an atom and expanded it to the size of a giant professional football stadium. The nucleus, which contains almost all of the mass, would only be the size of a small marble sitting right in the middle of the fifty-yard line! The electrons would be like tiny gnats buzzing around the very highest seats in the stands, leaving nothing but vast, empty air in between. So, even though a brick or a table feels solid, it is technically comprised of more than 99.99% nothingness. It challenges our basic senses and shows that the microscopic world operates on a scale that is nearly impossible to imagine without these kinds of comparisons.",
+        "link": "https://www.youtube.com/watch?v=ustfXi-mpkI&t=1178s"
+      },
+      "puzzles": {
+        "rebus": {
+          "clue": "S +🐈+💍",
+          "answer": "scattering",
+          "hint": "_ _ _ _ _ _ ring"
+        },
+        "scramble": {
+          "clue": "lcnsueu",
+          "answer": "nucleus",
+          "hint": "nu _ _ _ _ _"
+        },
+        "equation": {
+          "clue": "(1111⋅3²)/100",
+          "answer": "99.99"
+        }
+      }
+    },
+    {
+      "date": "4/29/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=5433",
+      "fact": {
+        "name": "4.241J Theory of City Form",
+        "text": "There isn't one clean \"theory\" of cities, just multiple conflicting explanations that don't fully agree. Instead of simplifying cities into a single model, the course shows they're shaped by overlapping social, economic, and political forces that often contradict each other. Understanding cities means accepting complexity, not resolving it.",
+        "link": "https://www.youtube.com/watch?v=RVWsRDF0-p0&t=5s"
+      },
+      "puzzles": {
+        "rebus": {
+          "clue": "🌆+📋",
+          "answer": "city form",
+          "hint": "c_ _ _   f _ _ _ (two words)"
+        },
+        "scramble": {
+          "clue": "yortihs",
+          "answer": "history",
+          "hint": "_ _ _ _ ory"
+        },
+        "mapCoord": {
+          "clue": "41.889269, 12.491988",
+          "answer": "italy"
+        }
+      }
+    },
+    {
+      "date": "5/6/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=3590",
+      "fact": {
+        "name": "8.01 Classical Mechanics",
+        "text": "Without air resistance, a feather and a coin would fall at the same rate! Their rates of acceleration (due to Earth's gravity) near Earth's surface are the same, regardless of mass.",
+        "link": "https://www.youtube.com/watch?v=AV-qyDnZx0A&t=4s"
+      },
+      "puzzles": {
+        "rebus": {
+          "clue": "🧑‍🔧🧑‍🔧🧑‍🔧🧑‍🔧",
+          "answer": "mechanics",
+          "hint": "m _ _ _ _ _ _ _ s"
+        },
+        "scramble": {
+          "clue": "snortivocean",
+          "answer": "conservation",
+          "hint": "con _ _ _ _ _ _ _ _ _"
+        },
+        "riddle": {
+          "clue": "I reshaped how we view motion and the heavens. My apple gave weight to laws that move the world. What's my last name?",
+          "answer": "Newton",
+          "hint": "I discovered gravity"
+        }
+      }
+    },
+    {
+      "date": "5/13/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=4892",
+      "fact": {
+        "name": "6.931 Development of Inventions and Creative Ideas",
+        "text": "The Massachusetts General Court (the colonial legislature) in 1641 enacted that \"There shall be no monopolies granted or allowed among us, but of such new inventions as are profitable to the country, and that for a short time.\"  The first patent granted by the Massachusetts General Court, pursuant to the enactment of 1641, was one to Samuel Winslow (1641) for a novel method of making salt. The first machinery patent granted by the same body was to Joseph Jenkes, in 1646, for a scythe-manufacturing mill. In 1667, Massachusetts offered a fifteen-year monopoly to anyone who would build a dry dock, and, the offer apparently not proving sufficiently attractive, the term of years was increased in the following year to twenty-one. Several of the colonies continued to grant patents, even after they became states upon the adoption of the Constitution."
+      },
+      "puzzles": {
+        "rebus": {
+          "clue": "👀+🦌- R",
+          "answer": "idea",
+          "hint": "_ _ _ a"
+        },
+        "scramble": {
+          "clue": "vteaecri",
+          "answer": "creative",
+          "hint": "_ _ _ _ _ ive"
+        },
+        "riddle": {
+          "clue": "Before me, voices stayed close. After me, they traveled. What's my last name?",
+          "answer": "Bell",
+          "hint": "Pick up the phone! Hello?"
+        }
+      }
+    },
+    {
+      "date": "5/20/2026",
+      "courseLink": "https://learn.mit.edu/search?&resource=4763",
+      "fact": {
+        "name": "24.900 Introduction to Linguistics",
+        "text": "Language isn't just learned by imitation. Humans seem to be born with built-in structures for grammar. The course treats language as a mental system with rules, not just a collection of words or habits. That means even children, with limited input, can generate sentences they've never heard before.",
+        "link": "https://youtu.be/Mvy5hjAWeZw?si=iw9BCHMlqyPsFnlJ&t=1761"
+      },
+      "puzzles": {
+        "rebus": {
+          "clue": "📱 + 🥅 + 🎫",
+          "answer": "phonetics",
+          "hint": "phone _ _ _ _"
+        },
+        "scramble": {
+          "clue": "elonicx",
+          "answer": "lexicon",
+          "hint": "_ _ _ _ _ on"
+        },
+        "riddle": {
+          "clue": "What single thing can be described by the simple present, the perfect past, and continuous future?",
+          "answer": "tense"
+        }
+      }
+    }
+  ]
+}
