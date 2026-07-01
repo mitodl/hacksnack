@@ -25,7 +25,7 @@ export interface HackSnackGameProps {
  *
  * This component is client-only (it reads `window` and loads the pdf.js worker
  * in the browser). In a server-rendered framework like Next.js, load it without
- * SSR, e.g. `dynamic(() => import("hacksnack").then((m) => m.HackSnackGame),
+ * SSR, e.g. `dynamic(() => import("@mitodl/hacksnack").then((m) => m.HackSnackGame),
  * { ssr: false })`.
  */
 export function HackSnackGame({
