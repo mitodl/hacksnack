@@ -6,7 +6,7 @@ component you can drop into any React app.
 ## Install
 
 ```sh
-npm install hacksnack
+npm install @mitodl/hacksnack
 # peer dependencies (you very likely already have these):
 npm install react react-dom @emotion/react @emotion/styled
 ```
@@ -21,7 +21,7 @@ browser). In Next.js, load it without SSR:
 import dynamic from "next/dynamic"
 
 const HackSnackGame = dynamic(
-  () => import("hacksnack").then((m) => m.HackSnackGame),
+  () => import("@mitodl/hacksnack").then((m) => m.HackSnackGame),
   { ssr: false },
 )
 
@@ -33,7 +33,7 @@ export default function Page() {
 In a plain React app you can import it directly:
 
 ```tsx
-import { HackSnackGame } from "hacksnack"
+import { HackSnackGame } from "@mitodl/hacksnack"
 
 export default () => <HackSnackGame />
 ```
