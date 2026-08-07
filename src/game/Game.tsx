@@ -1,12 +1,12 @@
 "use client"
 
-import React, { useEffect, useMemo, useReducer, useRef, useState } from "react"
+import React, { useMemo, useReducer, useRef, useState } from "react"
 import { useAsset, useAssetBasePath } from "./AssetContext"
 import { useGoogleMapsApiKey } from "./GoogleMapsContext"
 import { titleCase, passwordDisplay } from "./lib/strings"
-import { formatDateKey, startOfDay, formatElapsed } from "./lib/dates"
+import { formatDateKey, startOfDay } from "./lib/dates"
+import { countWord, capitalize, plural } from "./lib/counts"
 import { getEmbedUrl, isPdfUrl } from "./lib/url"
-import { estimateStrength } from "./lib/strength"
 import { findCourseMatches } from "./lib/gameData"
 import type { GroupKey } from "./types"
 import { initialGroupMaps, groupMapsReducer } from "./state"
@@ -16,8 +16,11 @@ import { usePuzzlePickerRows } from "./hooks/usePuzzlePickerRows"
 import { useDateSet } from "./hooks/useDateSet"
 import { useDailyPuzzle } from "./hooks/useDailyPuzzle"
 import { PdfFactViewer } from "./components/PdfFactViewer"
-import { Card } from "./components/primitives"
-import { ProgressSentence } from "./components/ProgressSentence"
+import { FinalCode } from "./components/FinalCode"
+import type { FinalCodeSlot } from "./components/FinalCode"
+import { MitConnection } from "./components/MitConnection"
+import { HowToPlay } from "./components/HowToPlay"
+import { StarIcon } from "./components/icons"
 import {
   PuzzleRiddle,
   PuzzleEmoji,
@@ -30,67 +33,45 @@ import { PuzzleImage } from "./components/puzzles/PuzzleImage"
 import {
   FullFrame,
   GameLink,
-  Strong,
   SecondaryButton,
   GameRoot,
   ConfettiLayer,
   ConfettiPiece,
   TimImg,
-  Shell,
-  GameHeader,
-  IconWrap,
-  GameIcon,
-  TitleCol,
-  GameTitle,
-  MobileLinks,
+  BoardPage,
+  BoardContainer,
+  BoardMain,
+  BoardCard,
+  BoardHeaderRow,
+  BoardHeadings,
+  BoardHeadline,
+  BoardSubhead,
+  BoardSide,
+  BoardControls,
+  BoardControlsMeta,
+  SolvedPill,
+  SolvedPillText,
   LearnLink,
-  HeaderRight,
-  DesktopLinks,
-  Timer,
-  ProgressArea,
-  LinkButton,
   Stack,
   SmallLabel,
   LoadingBody,
-  MobileNav,
-  NavButton,
-  DesktopNav,
-  NavArrow,
-  NavContent,
+  InfoPanel,
   OcwBody,
   OcwHeading,
   OcwNote,
   OcwList,
-  Footer,
-  DateButtons,
-  OverlayBackdrop,
-  OverlayWrap,
-  OverlayPanel,
-  OverlayHead,
-  OverlayHeadInner,
-  OverlayKicker,
-  OverlaySentence,
-  OverlayMeta,
-  CloseButton,
-  FunFactAnchor,
-  FunFactRow,
-  FunFactImg,
-  FunFactLink,
-  FunFactName,
-  FunFactText,
   FactEmbed,
   FactVideo,
-  FactPlaceholder,
 } from "./styled"
 
 // Number of confetti pieces rained down on the win screen.
 const CONFETTI_PIECE_COUNT = 400
 
-// Display labels for each puzzle type, shown in the progress tracker.
+// Display labels for each puzzle type, used by the final-code slots.
 const PROGRESS_LABELS: Record<GroupKey, string> = {
   riddle: "Riddle",
   emoji: "Rebus",
-  scramble: "Scramble",
+  scramble: "Unscramble",
   symbol: "Symbol",
   image: "Image",
   equation: "Equation",
@@ -101,10 +82,6 @@ export default function Game() {
   const asset = useAsset()
   const assetBasePath = useAssetBasePath()
   const googleMapsApiKey = useGoogleMapsApiKey()
-  const [step, setStep] = useState(0)
-  const [elapsedMs, setElapsedMs] = useState(0)
-  const [timerRunning, setTimerRunning] = useState(true)
-  const timerStartRef = useRef<number>(Date.now())
   const todayMidnight = useMemo(() => startOfDay(new Date()), [])
 
   const [groupMaps, dispatchGroups] = useReducer(
@@ -114,7 +91,6 @@ export default function Game() {
   const wordsByGroup = groupMaps.words
   const inputsByGroup = groupMaps.inputs
   const hintShownByGroup = groupMaps.hintShown
-  const hintCountedByGroup = groupMaps.hintCounted
   const [symbol, setSymbol] = useState<string>("")
 
   // Per-set-date progress is persisted in sessionStorage (see lib/progress) so
@@ -128,7 +104,9 @@ export default function Game() {
   symbolRef.current = symbol
   const prevDateKeyRef = useRef<string | null>(null)
 
-  const [message, setMessage] = useState<string>("")
+  // Every puzzle is on screen at once, so a retry message belongs to the
+  // puzzle that produced it rather than the board as a whole.
+  const [messages, setMessages] = useState<Partial<Record<GroupKey, string>>>({})
   const [showScrambleOCWList, setShowScrambleOCWList] = useState(false)
   const [scrambleOCWLoading, setScrambleOCWLoading] = useState(false)
   const [scrambleMatches, setScrambleMatches] = useState<
@@ -233,14 +211,6 @@ export default function Game() {
     if (hasProgress(snapshot)) saveProgress(key, snapshot)
   }, [groupMaps, symbol])
 
-  // Hide any open OCW panels whenever we restart the flow.
-  React.useEffect(() => {
-    if (step === 0) {
-      setShowScrambleOCWList(false)
-      setShowRiddleOCWList(false)
-    }
-  }, [step])
-
   const totalSteps = Math.max(1, activeGroups.length)
   const isGroupSolved = React.useCallback(
     (g: GroupKey) => {
@@ -255,40 +225,10 @@ export default function Game() {
     0,
   )
 
-  React.useEffect(() => {
-    if (step >= activeGroups.length && activeGroups.length > 0) {
-      setStep(activeGroups.length - 1)
-    }
-  }, [activeGroups.length, step])
-
-  const sentence = useMemo(() => {
-    const parts = activeGroups
-      .map((g) => {
-        if (g === "symbol") return symbol
-        if (g === "image")
-          return wordsByGroup.image
-            ? passwordDisplay(titleCase(wordsByGroup.image))
-            : ""
-        const val = wordsByGroup[g]
-        return val ? passwordDisplay(titleCase(val)) : ""
-      })
-      .filter(Boolean)
-    return parts.join("")
-  }, [activeGroups, wordsByGroup, symbol])
-
-  const strength = useMemo(() => estimateStrength(sentence), [sentence])
-
-  function next() {
-    if (activeGroups.length === 0) return
-    setStep((s) => (s >= activeGroups.length - 1 ? 0 : s + 1))
-    setMessage("")
-  }
-
-  function prev() {
-    if (activeGroups.length === 0) return
-    setStep((s) => (s <= 0 ? activeGroups.length - 1 : s - 1))
-    setMessage("")
-  }
+  const solvedWord = React.useCallback(
+    (g: GroupKey) => (g === "symbol" ? symbol : wordsByGroup[g]),
+    [symbol, wordsByGroup],
+  )
 
   function resetAll() {
     // Snapshot the outgoing day's progress so returning to it restores the
@@ -299,11 +239,7 @@ export default function Game() {
         symbol: symbolRef.current,
       })
     }
-    setStep(0)
-    setMessage("")
-    setElapsedMs(0)
-    setTimerRunning(true)
-    timerStartRef.current = Date.now()
+    setMessages({})
     setShowScrambleOCWList(false)
     setScrambleOCWLoading(false)
     setScrambleMatches([])
@@ -313,10 +249,6 @@ export default function Game() {
     resetCelebration()
   }
   resetAllRef.current = resetAll
-  const dailyHintClicks = React.useMemo(
-    () => Object.values(hintCountedByGroup).filter(Boolean).length,
-    [hintCountedByGroup],
-  )
   const toggleHint = React.useCallback(
     (group: GroupKey) => {
       dispatchGroups({
@@ -328,7 +260,7 @@ export default function Game() {
     [activeHints],
   )
 
-  // Show OCW list for Scramble word when user clicks the Scramble label
+  // Show OCW list for the Scramble word when its final-code slot is clicked
   const handleScrambleClick = async () => {
     if (!wordsByGroup.scramble) return
     if (showScrambleOCWList) {
@@ -347,7 +279,7 @@ export default function Game() {
     setScrambleOCWLoading(false)
   }
 
-  // Show OCW list for Riddle word when user clicks the Riddle label
+  // Show OCW list for the Riddle word when its final-code slot is clicked
   const handleRiddleClick = async () => {
     if (!wordsByGroup.riddle) return
     if (showRiddleOCWList) {
@@ -366,8 +298,10 @@ export default function Game() {
     setRiddleOCWLoading(false)
   }
 
-  const setGroupInput = (group: GroupKey) => (value: string) =>
+  const setGroupInput = (group: GroupKey) => (value: string) => {
     dispatchGroups({ type: "setInput", group, value })
+    setMessages((prev) => (prev[group] ? { ...prev, [group]: "" } : prev))
+  }
 
   // Every text-answer puzzle validates the same way: normalize the typed
   // input, compare it to the expected answer, and on success store the raw
@@ -441,8 +375,8 @@ export default function Game() {
     if (cfg.isCorrect(cfg.normalize(raw))) {
       dispatchGroups({ type: "setInput", group, value: cfg.inputValue })
       dispatchGroups({ type: "setWord", group, value: cfg.wordValue })
-      setMessage("")
-    } else setMessage(cfg.failMessage)
+      setMessages((prev) => ({ ...prev, [group]: "" }))
+    } else setMessages((prev) => ({ ...prev, [group]: cfg.failMessage }))
   }
 
   // Symbol is special: its solved value lives in its own `symbol` state
@@ -455,8 +389,8 @@ export default function Game() {
     if (clean === expected) {
       dispatchGroups({ type: "setInput", group: "symbol", value: expected })
       setSymbol(expected)
-      setMessage("")
-    } else setMessage("Nope, try again.")
+      setMessages((prev) => ({ ...prev, symbol: "" }))
+    } else setMessages((prev) => ({ ...prev, symbol: "Nope, try again." }))
   }
 
   const handleImageSolved = () => {
@@ -469,9 +403,6 @@ export default function Game() {
     }
   }
 
-  const currentGroup =
-    step < activeGroups.length ? activeGroups[step] : undefined
-  const canNavigate = activeGroups.length > 1
   const allSolved =
     solvedCount === activeGroups.length && activeGroups.length > 0
   const factText = pickerRow?.fact?.text?.trim() || ""
@@ -483,46 +414,135 @@ export default function Game() {
   const {
     isCelebrating,
     timPath,
-    showWinOverlay,
-    setShowWinOverlay,
     showFunFact,
-    winOverlayLayout,
-    updateWinOverlayLayout,
     funFactAnchorRef,
-    winSummaryAreaRef,
     resetCelebration,
   } = useWinCelebration({ allSolved, hasFunFact })
 
-  useEffect(() => {
-    if (!timerRunning) return
-    timerStartRef.current = Date.now() - elapsedMs
-    const id = window.setInterval(() => {
-      setElapsedMs(Date.now() - timerStartRef.current)
-    }, 250)
-    return () => window.clearInterval(id)
-    // elapsedMs only seeds the start time when the timer (re)starts; including
-    // it would restart the interval on every tick.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timerRunning])
-
-  useEffect(() => {
-    if (allSolved && timerRunning) setTimerRunning(false)
-  }, [allSolved, timerRunning])
-
-  const progressClickHandlers: Partial<Record<GroupKey, () => void>> = {
+  // A solved code word can be explored: clicking its slot lists the OCW
+  // courses that mention it. Only the word puzzles have such a list.
+  const slotClickHandlers: Partial<Record<GroupKey, () => void>> = {
     riddle: handleRiddleClick,
     scramble: handleScrambleClick,
   }
-  const progressItems = activeGroups.map((g, idx) => {
-    const solvedWord = g === "symbol" ? symbol : wordsByGroup[g]
-    const onClick = progressClickHandlers[g]
+  const finalCodeSlots: FinalCodeSlot[] = activeGroups.map((group, idx) => {
+    const word = solvedWord(group)
+    const onClick = slotClickHandlers[group]
     return {
-      key: `${g}-${idx}`,
-      label: PROGRESS_LABELS[g],
-      value: solvedWord ? passwordDisplay(solvedWord) : undefined,
-      ...(onClick ? { onClick, clickable: !!solvedWord } : {}),
+      key: `${group}-${idx}`,
+      label: PROGRESS_LABELS[group],
+      // Shown exactly as the word appears in the final code (see `sentence`).
+      ...(word
+        ? {
+            word: passwordDisplay(
+              group === "symbol" ? word : titleCase(word),
+            ),
+          }
+        : {}),
+      ...(onClick && word ? { onClick } : {}),
     }
   })
+
+  const clueCount = activeGroups.length
+  const puzzleShellProps = (group: GroupKey, index: number) => ({
+    stepIndex: index,
+    totalSteps,
+    isSolved: isGroupSolved(group),
+    hint: activeHints[group],
+    hintShown: !!hintShownByGroup[group],
+    onToggleHint: () => toggleHint(group),
+  })
+  const textPuzzleProps = (group: GroupKey, index: number) => ({
+    ...puzzleShellProps(group, index),
+    input: inputsByGroup[group] || "",
+    setInput: setGroupInput(group),
+    onSubmit: () => submitAnswer(group),
+    message: messages[group] || "",
+  })
+
+  const renderPuzzle = (group: GroupKey, index: number) => {
+    switch (group) {
+      case "emoji":
+        return (
+          activeEmoji && (
+            <PuzzleEmoji
+              key={group}
+              emoji={activeEmoji}
+              {...textPuzzleProps(group, index)}
+            />
+          )
+        )
+      case "scramble":
+        return (
+          activeScramble && (
+            <PuzzleScramble
+              key={group}
+              scramble={activeScramble}
+              {...textPuzzleProps(group, index)}
+            />
+          )
+        )
+      case "riddle":
+        return (
+          activeRiddle && (
+            <PuzzleRiddle
+              key={group}
+              riddle={activeRiddle}
+              {...textPuzzleProps(group, index)}
+            />
+          )
+        )
+      case "equation":
+        return (
+          pickerEquation && (
+            <PuzzleEquation
+              key={group}
+              equation={pickerEquation}
+              {...textPuzzleProps(group, index)}
+            />
+          )
+        )
+      case "map":
+        return (
+          pickerMapCoord && (
+            <PuzzleMap
+              key={group}
+              mapCoord={pickerMapCoord}
+              apiKey={googleMapsApiKey}
+              {...textPuzzleProps(group, index)}
+            />
+          )
+        )
+      case "symbol":
+        return (
+          pickerSymbol && (
+            <PuzzleSymbol
+              key={group}
+              task={pickerSymbol}
+              {...puzzleShellProps(group, index)}
+              input={inputsByGroup.symbol || ""}
+              setInput={setGroupInput("symbol")}
+              onSubmit={handleSymbolInput}
+              message={messages.symbol || ""}
+            />
+          )
+        )
+      case "image":
+        return (
+          activeImagePuzzle && (
+            <PuzzleImage
+              key={group}
+              puzzle={activeImagePuzzle}
+              onSolved={handleImageSolved}
+              {...puzzleShellProps(group, index)}
+              isSolved={!!wordsByGroup.image}
+            />
+          )
+        )
+      default:
+        return null
+    }
+  }
 
   return (
     <GameRoot>
@@ -588,381 +608,164 @@ export default function Game() {
           />
         </>
       )}
-      <Shell>
-        <GameHeader>
-          <IconWrap>
-            <GameIcon src={asset("icon.png")} alt="Hack Snack icon" />
-          </IconWrap>
-          <TitleCol>
-            <GameTitle>Hack Snack</GameTitle>
-            <MobileLinks>
-              <LearnLink href="#/learn">Click to Learn to Play</LearnLink>
-            </MobileLinks>
-          </TitleCol>
-          <HeaderRight>
-            <DesktopLinks>
-              <LearnLink href="#/learn">Click to Learn to Play</LearnLink>
-            </DesktopLinks>
-            <Timer>
-              {formatElapsed(elapsedMs)} | Hints: {dailyHintClicks}
-            </Timer>
-          </HeaderRight>
-        </GameHeader>
+      <BoardPage>
+        <BoardContainer>
+          <BoardMain>
+            <BoardCard>
+              <BoardHeaderRow>
+                <BoardHeadings>
+                  <BoardHeadline>
+                    {capitalize(countWord(clueCount))}{" "}
+                    {plural(clueCount, "clue")}. One hidden code.
+                    <br />
+                    Can you crack it?
+                  </BoardHeadline>
+                  <BoardSubhead>Solve the clues in any order</BoardSubhead>
+                </BoardHeadings>
+                <SolvedPill>
+                  <StarIcon />
+                  <SolvedPillText>
+                    {solvedCount} of {clueCount} solved
+                  </SolvedPillText>
+                </SolvedPill>
+              </BoardHeaderRow>
 
-        <ProgressArea ref={winSummaryAreaRef}>
-          <ProgressSentence
-            items={progressItems}
-            footerAction={
-              allSolved && !showWinOverlay ? (
-                <LinkButton
-                  type="button"
-                  onClick={() => {
-                    updateWinOverlayLayout()
-                    setShowWinOverlay(true)
-                  }}
-                >
-                  Show win summary
-                </LinkButton>
-              ) : undefined
-            }
-          />
-        </ProgressArea>
-
-        <Stack>
-          {pickerLoading && (
-            <Card>
-              <SmallLabel>Loading puzzles</SmallLabel>
-              <LoadingBody>Fetching today's puzzle set...</LoadingBody>
-            </Card>
-          )}
-          {!pickerLoading && noPuzzlesToday && (
-            <Card>
-              <SmallLabel>No puzzles</SmallLabel>
-              <LoadingBody>No puzzles available for this date.</LoadingBody>
-            </Card>
-          )}
-
-          {activeGroups.length > 0 && (
-            <MobileNav>
-              <NavButton
-                type="button"
-                onClick={prev}
-                disabled={!canNavigate}
-                aria-label="Previous puzzle"
-              >
-                &lt; Prev
-              </NavButton>
-              <NavButton
-                type="button"
-                onClick={next}
-                disabled={!canNavigate}
-                aria-label="Next puzzle"
-              >
-                Next &gt;
-              </NavButton>
-            </MobileNav>
-          )}
-
-          {activeGroups.length > 0 && (
-            <DesktopNav>
-              <NavArrow
-                type="button"
-                onClick={prev}
-                disabled={!canNavigate}
-                aria-label="Previous puzzle"
-              >
-                &lt;
-              </NavArrow>
-              <NavContent
-                $solved={
-                  !!currentGroup &&
-                  currentGroup !== "image" &&
-                  isGroupSolved(currentGroup)
-                }
-              >
-                {currentGroup === "riddle" && activeRiddle && (
-                  <PuzzleRiddle
-                    riddle={activeRiddle}
-                    input={inputsByGroup.riddle || ""}
-                    setInput={setGroupInput("riddle")}
-                    onSubmit={() => submitAnswer("riddle")}
-                    message={message}
-                    stepIndex={step}
-                    totalSteps={totalSteps}
-                    isSolved={isGroupSolved("riddle")}
-                    hint={activeHints.riddle}
-                    hintShown={!!hintShownByGroup.riddle}
-                    onToggleHint={() => toggleHint("riddle")}
-                  />
+              <Stack>
+                {pickerLoading && (
+                  <InfoPanel>
+                    <SmallLabel>Loading puzzles</SmallLabel>
+                    <LoadingBody>Fetching today's puzzle set...</LoadingBody>
+                  </InfoPanel>
+                )}
+                {!pickerLoading && noPuzzlesToday && (
+                  <InfoPanel>
+                    <SmallLabel>No puzzles</SmallLabel>
+                    <LoadingBody>
+                      No puzzles available for this date.
+                    </LoadingBody>
+                  </InfoPanel>
                 )}
 
-                {currentGroup === "emoji" && activeEmoji && (
-                  <PuzzleEmoji
-                    emoji={activeEmoji}
-                    input={inputsByGroup.emoji || ""}
-                    setInput={setGroupInput("emoji")}
-                    onSubmit={() => submitAnswer("emoji")}
-                    message={message}
-                    stepIndex={step}
-                    totalSteps={totalSteps}
-                    isSolved={isGroupSolved("emoji")}
-                    hint={activeHints.emoji}
-                    hintShown={!!hintShownByGroup.emoji}
-                    onToggleHint={() => toggleHint("emoji")}
-                  />
+                {activeGroups.map((group, index) => renderPuzzle(group, index))}
+
+                {activeGroups.length > 0 && (
+                  <FinalCode
+                    slots={finalCodeSlots}
+                    note={`Solve all ${countWord(clueCount)} ${plural(
+                      clueCount,
+                      "clue",
+                    )} to reveal the final code and today's MIT connection.`}
+                    unlocked={allSolved}
+                    anchorRef={funFactAnchorRef}
+                  >
+                    {/* Held back until the celebrating Tim lands on the panel */}
+                    {allSolved && hasFunFact && showFunFact && (
+                      <MitConnection
+                        text={factText}
+                        courseName={pickerRow?.fact?.name}
+                        courseLink={pickerRow?.courseLink}
+                      >
+                        {hasFactLink && (
+                          <FactEmbed>
+                            {factIsPdf ? (
+                              <PdfFactViewer url={factEmbedUrl} />
+                            ) : (
+                              <FactVideo>
+                                <FullFrame
+                                  title="Course fact video"
+                                  src={factEmbedUrl}
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                />
+                              </FactVideo>
+                            )}
+                          </FactEmbed>
+                        )}
+                      </MitConnection>
+                    )}
+                  </FinalCode>
                 )}
 
-                {currentGroup === "scramble" && activeScramble && (
-                  <PuzzleScramble
-                    scramble={activeScramble}
-                    input={inputsByGroup.scramble || ""}
-                    setInput={setGroupInput("scramble")}
-                    onSubmit={() => submitAnswer("scramble")}
-                    message={message}
-                    stepIndex={step}
-                    totalSteps={totalSteps}
-                    isSolved={isGroupSolved("scramble")}
-                    hint={activeHints.scramble}
-                    hintShown={!!hintShownByGroup.scramble}
-                    onToggleHint={() => toggleHint("scramble")}
-                  />
-                )}
-
-                {currentGroup === "equation" && pickerEquation && (
-                  <PuzzleEquation
-                    equation={pickerEquation}
-                    input={inputsByGroup.equation || ""}
-                    setInput={setGroupInput("equation")}
-                    onSubmit={() => submitAnswer("equation")}
-                    message={message}
-                    stepIndex={step}
-                    totalSteps={totalSteps}
-                    isSolved={isGroupSolved("equation")}
-                    hint={activeHints.equation}
-                    hintShown={!!hintShownByGroup.equation}
-                    onToggleHint={() => toggleHint("equation")}
-                  />
-                )}
-
-                {currentGroup === "map" && pickerMapCoord && (
-                  <PuzzleMap
-                    mapCoord={pickerMapCoord}
-                    input={inputsByGroup.map || ""}
-                    setInput={setGroupInput("map")}
-                    onSubmit={() => submitAnswer("map")}
-                    message={message}
-                    stepIndex={step}
-                    totalSteps={totalSteps}
-                    apiKey={googleMapsApiKey}
-                    isSolved={isGroupSolved("map")}
-                    hint={activeHints.map}
-                    hintShown={!!hintShownByGroup.map}
-                    onToggleHint={() => toggleHint("map")}
-                  />
-                )}
-
-                {currentGroup === "image" && activeImagePuzzle && (
-                  <PuzzleImage
-                    puzzle={activeImagePuzzle}
-                    onSolved={handleImageSolved}
-                    stepIndex={step}
-                    totalSteps={totalSteps}
-                    isSolved={!!wordsByGroup.image}
-                    hint={activeHints.image}
-                    hintShown={!!hintShownByGroup.image}
-                    onToggleHint={() => toggleHint("image")}
-                  />
-                )}
-
-                {currentGroup === "symbol" && pickerSymbol && (
-                  <PuzzleSymbol
-                    task={pickerSymbol}
-                    input={inputsByGroup.symbol || ""}
-                    setInput={setGroupInput("symbol")}
-                    onSubmit={handleSymbolInput}
-                    message={message}
-                    stepIndex={step}
-                    totalSteps={totalSteps}
-                    isSolved={isGroupSolved("symbol")}
-                    hint={activeHints.symbol}
-                    hintShown={!!hintShownByGroup.symbol}
-                    onToggleHint={() => toggleHint("symbol")}
-                  />
-                )}
-              </NavContent>
-              <NavArrow
-                type="button"
-                onClick={next}
-                disabled={!canNavigate}
-                aria-label="Next puzzle"
-              >
-                &gt;
-              </NavArrow>
-            </DesktopNav>
-          )}
-
-          {/* Show OCW matches under the riddle box only when toggled by click */}
-          {showRiddleOCWList && (
-            <Card>
-              <SmallLabel>List of OCW Courses</SmallLabel>
-              <OcwBody>
-                <OcwHeading>
-                  Courses mentioning "{wordsByGroup.riddle || ""}"
-                </OcwHeading>
-                {riddleOCWLoading && <OcwNote>Loading…</OcwNote>}
-                {!riddleOCWLoading && riddleMatches.length === 0 && (
-                  <OcwNote>No courses found.</OcwNote>
-                )}
-                <OcwList>
-                  {riddleMatches.map((c, i) => (
-                    <li key={i}>
-                      <GameLink href={c.url} target="_blank" rel="noreferrer">
-                        {c.title}
-                      </GameLink>
-                    </li>
-                  ))}
-                </OcwList>
-              </OcwBody>
-            </Card>
-          )}
-          {showScrambleOCWList && (
-            <Card>
-              <SmallLabel>List of OCW Courses</SmallLabel>
-              <OcwBody>
-                <OcwHeading>
-                  Courses mentioning "{wordsByGroup.scramble || ""}"
-                </OcwHeading>
-                {scrambleOCWLoading && <OcwNote>Loading…</OcwNote>}
-                {!scrambleOCWLoading && scrambleMatches.length === 0 && (
-                  <OcwNote>No courses found.</OcwNote>
-                )}
-                <OcwList>
-                  {scrambleMatches.map((c, i) => (
-                    <li key={i}>
-                      <GameLink href={c.url} target="_blank" rel="noreferrer">
-                        {c.title}
-                      </GameLink>
-                    </li>
-                  ))}
-                </OcwList>
-              </OcwBody>
-            </Card>
-          )}
-        </Stack>
-
-        <Footer>
-          © MIT Learn - Puzzle date: {formatDateKey(selectedDate)}
-        </Footer>
-        <DateButtons>
-          <SecondaryButton onClick={goPrevDay} disabled={!previousSetDate}>
-            Previous Set
-          </SecondaryButton>
-          <SecondaryButton onClick={goNextDay} disabled={!canGoNextSet}>
-            Next Set
-          </SecondaryButton>
-          <SecondaryButton onClick={goCurrentSet} disabled={!currentSetDate}>
-            Current
-          </SecondaryButton>
-        </DateButtons>
-      </Shell>
-      {showWinOverlay && allSolved && (
-        <>
-          <OverlayBackdrop onClick={() => setShowWinOverlay(false)} />
-          <OverlayWrap
-            style={
-              winOverlayLayout
-                ? {
-                    top: winOverlayLayout.top,
-                    left: winOverlayLayout.left,
-                    width: winOverlayLayout.width,
-                    maxHeight: winOverlayLayout.maxHeight,
-                  }
-                : {
-                    top: 16,
-                    left: 16,
-                    right: 16,
-                    maxHeight: "calc(100vh - 32px)",
-                  }
-            }
-            onClick={(event) => event.stopPropagation()}
-          >
-            <OverlayPanel>
-              <OverlayHead>
-                <OverlayHeadInner>
-                  <div>
-                    <OverlayKicker>Puzzle Cracked</OverlayKicker>
-                    <OverlaySentence>{sentence}</OverlaySentence>
-                    <OverlayMeta>
-                      <Strong>{strength.label}</Strong> |{" "}
-                      <Strong>{strength.entropy} bits entropy</Strong> |{" "}
-                      <Strong>{strength.crackTime} to crack</Strong>{" "}
-                    </OverlayMeta>
-                    <OverlayMeta>
-                      <Strong>
-                        You took {formatElapsed(elapsedMs)} minutes
-                      </Strong>{" "}
-                      | <Strong>Hints: {dailyHintClicks}</Strong>
-                    </OverlayMeta>
-                  </div>
-                </OverlayHeadInner>
-                <CloseButton
-                  type="button"
-                  onClick={() => setShowWinOverlay(false)}
-                >
-                  Close
-                </CloseButton>
-              </OverlayHead>
-              {hasFunFact && (
-                <Card>
-                  <FunFactAnchor ref={funFactAnchorRef} />
-                  {showFunFact ? (
-                    <>
-                      <FunFactRow>
-                        <FunFactImg src={asset("tim.png")} alt="Tim" />
-                        <div>
-                          <SmallLabel>Fun Fact</SmallLabel>
-                          {pickerRow?.courseLink ? (
-                            <FunFactLink
-                              href={pickerRow.courseLink}
+                {/* OCW matches for a solved code word, opened from its slot */}
+                {showRiddleOCWList && (
+                  <InfoPanel>
+                    <SmallLabel>List of OCW Courses</SmallLabel>
+                    <OcwBody>
+                      <OcwHeading>
+                        Courses mentioning "{wordsByGroup.riddle || ""}"
+                      </OcwHeading>
+                      {riddleOCWLoading && <OcwNote>Loading…</OcwNote>}
+                      {!riddleOCWLoading && riddleMatches.length === 0 && (
+                        <OcwNote>No courses found.</OcwNote>
+                      )}
+                      <OcwList>
+                        {riddleMatches.map((c, i) => (
+                          <li key={i}>
+                            <GameLink
+                              href={c.url}
                               target="_blank"
                               rel="noreferrer"
                             >
-                              {pickerRow?.fact?.name || ""}
-                            </FunFactLink>
-                          ) : (
-                            <FunFactName>
-                              {pickerRow?.fact?.name || ""}
-                            </FunFactName>
-                          )}
-                        </div>
-                      </FunFactRow>
-                      {factText && <FunFactText>{factText}</FunFactText>}
-                      {hasFactLink && (
-                        <FactEmbed>
-                          {factIsPdf ? (
-                            <PdfFactViewer url={factEmbedUrl} />
-                          ) : (
-                            <FactVideo>
-                              <FullFrame
-                                title="Course fact video"
-                                src={factEmbedUrl}
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                              />
-                            </FactVideo>
-                          )}
-                        </FactEmbed>
+                              {c.title}
+                            </GameLink>
+                          </li>
+                        ))}
+                      </OcwList>
+                    </OcwBody>
+                  </InfoPanel>
+                )}
+                {showScrambleOCWList && (
+                  <InfoPanel>
+                    <SmallLabel>List of OCW Courses</SmallLabel>
+                    <OcwBody>
+                      <OcwHeading>
+                        Courses mentioning "{wordsByGroup.scramble || ""}"
+                      </OcwHeading>
+                      {scrambleOCWLoading && <OcwNote>Loading…</OcwNote>}
+                      {!scrambleOCWLoading && scrambleMatches.length === 0 && (
+                        <OcwNote>No courses found.</OcwNote>
                       )}
-                    </>
-                  ) : hasFactLink ? (
-                    <FactPlaceholder />
-                  ) : null}
-                </Card>
-              )}
-            </OverlayPanel>
-          </OverlayWrap>
-        </>
-      )}
+                      <OcwList>
+                        {scrambleMatches.map((c, i) => (
+                          <li key={i}>
+                            <GameLink
+                              href={c.url}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {c.title}
+                            </GameLink>
+                          </li>
+                        ))}
+                      </OcwList>
+                    </OcwBody>
+                  </InfoPanel>
+                )}
+              </Stack>
+            </BoardCard>
+
+            <BoardControls>
+              <BoardControlsMeta>
+                Puzzle date - {formatDateKey(selectedDate)}
+              </BoardControlsMeta>
+              <SecondaryButton onClick={goPrevDay} disabled={!previousSetDate}>
+                Previous Set
+              </SecondaryButton>
+              <SecondaryButton onClick={goNextDay} disabled={!canGoNextSet}>
+                Next Set
+              </SecondaryButton>
+              <SecondaryButton onClick={goCurrentSet} disabled={!currentSetDate}>
+                Current
+              </SecondaryButton>
+              <LearnLink href="#/learn">Learn to play</LearnLink>
+            </BoardControls>
+          </BoardMain>
+
+          <BoardSide>
+            <HowToPlay groups={activeGroups} />
+          </BoardSide>
+        </BoardContainer>
+      </BoardPage>
     </GameRoot>
   )
 }

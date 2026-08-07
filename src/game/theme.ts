@@ -29,6 +29,7 @@ const variant = (
 
 const colors = {
   mitRed: "#750014",
+  red: "#A31F34",
   black: "#000000",
   white: "#FFFFFF",
   darkGray2: "#212326",
@@ -39,6 +40,16 @@ const colors = {
   lightGray2: "#DDE1E6",
   lightGray1: "#F3F4F8",
   darkGreen: "#004D1A",
+  // Solved states: the row border and the check, and the solved answer text.
+  green: "#00AD00",
+  green1: "#008000",
+  purple: "#9933FF",
+  purpleLight: "#CC99FF",
+  purpleDark: "#3E006B",
+  // The final-code panel and its slots are drawn in Figma as white at 90% /
+  // 94% opacity over `purple`; these are those blends flattened.
+  purpleTint: "#F5EBFF",
+  purpleTintLight: "#F9F3FF",
 } as const
 
 export const typography = {
@@ -47,12 +58,18 @@ export const typography = {
   fontWeightRegular: fontWeights.roman,
   fontWeightMedium: fontWeights.medium,
   fontWeightBold: fontWeights.bold,
+  h2: variant(fontWeights.bold, 34, 40),
   h4: variant(fontWeights.bold, 24, 30),
   h5: variant(fontWeights.bold, 18, 26),
+  subhead1: variant(fontWeights.bold, 16, 20),
+  subtitle1: variant(fontWeights.medium, 16, 24),
   subtitle2: variant(fontWeights.medium, 14, 18),
   subtitle3: variant(fontWeights.medium, 12, 16),
   body1: variant(fontWeights.roman, 16, 20),
   body2: variant(fontWeights.roman, 14, 18),
+  body2Bold: variant(fontWeights.bold, 14, 18),
+  // 14/22 — the looser body used by the "How to play" panel.
+  body2Loose: variant(fontWeights.roman, 14, 22),
   body3: variant(fontWeights.roman, 12, 16),
   button: variant(fontWeights.medium, 14, 18, { textTransform: "none" }),
 } as const

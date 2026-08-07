@@ -1,11 +1,5 @@
-import React, { useEffect, useRef, useState } from "react"
-
-type WinOverlayLayout = {
-  top: number
-  left: number
-  width: number
-  maxHeight: number
-}
+import { useEffect, useRef, useState } from "react"
+import React from "react"
 
 type TimPath = {
   startX: number
@@ -16,10 +10,15 @@ type TimPath = {
   endY: number
 }
 
-// Orchestrates the end-of-puzzle celebration: the responsively-positioned win
-// summary overlay, and "Tim" flying across the screen before the fun fact is
-// revealed. Driven by whether every puzzle is solved (`allSolved`) and whether
-// there is a fun fact to show (`hasFunFact`).
+// How long to wait between attempts to measure where Tim should land, and how
+// many times to try before flying to a sensible default.
+const MEASURE_RETRY_MS = 16
+const MEASURE_ATTEMPTS = 8
+
+// Orchestrates the end-of-puzzle celebration: "Tim" flies across the screen and
+// lands on the revealed MIT connection, which is held back until he gets there.
+// Driven by whether every puzzle is solved (`allSolved`) and whether there is a
+// connection to reveal (`hasFunFact`).
 export function useWinCelebration({
   allSolved,
   hasFunFact,
@@ -29,10 +28,6 @@ export function useWinCelebration({
 }) {
   const [isCelebrating, setIsCelebrating] = useState(false)
   const [showFunFact, setShowFunFact] = useState(false)
-  const [showWinOverlay, setShowWinOverlay] = useState(false)
-  const [lockWinOverlayLayout, setLockWinOverlayLayout] = useState(false)
-  const [winOverlayLayout, setWinOverlayLayout] =
-    useState<WinOverlayLayout | null>(null)
   const [timPath, setTimPath] = useState<TimPath>({
     startX: -120,
     startY: 220,
@@ -44,30 +39,6 @@ export function useWinCelebration({
   const celebrationTimerRef = useRef<number | null>(null)
   const prevAllSolvedRef = useRef(false)
   const funFactAnchorRef = useRef<HTMLDivElement | null>(null)
-  const winSummaryAreaRef = useRef<HTMLDivElement | null>(null)
-
-  const updateWinOverlayLayout = React.useCallback(() => {
-    const area = winSummaryAreaRef.current
-    if (!area || typeof window === "undefined") return null
-    const rect = area.getBoundingClientRect()
-    const isDesktop = window.innerWidth >= 1024
-    const gap = 16
-    const rawWidth = isDesktop ? ((rect.width - gap) / 2) * 1.5 : rect.width
-    const maxWidth = Math.max(280, window.innerWidth - 32)
-    const width = Math.min(Math.max(rawWidth, 280), maxWidth)
-    const unclampedLeft = isDesktop
-      ? (window.innerWidth - width) / 2
-      : rect.left
-    const left = Math.min(
-      Math.max(16, unclampedLeft),
-      window.innerWidth - width - 16,
-    )
-    const top = isDesktop ? 100 : Math.max(16, rect.top - 72)
-    const maxHeight = Math.max(320, window.innerHeight - top - 24)
-    const next = { top, left, width, maxHeight }
-    setWinOverlayLayout(next)
-    return next
-  }, [])
 
   // Tear down the celebration immediately (used by the game's resetAll). The
   // `allSolved` effect performs the same cleanup when the puzzle is no longer
@@ -75,9 +46,6 @@ export function useWinCelebration({
   const resetCelebration = React.useCallback(() => {
     setIsCelebrating(false)
     setShowFunFact(false)
-    setShowWinOverlay(false)
-    setLockWinOverlayLayout(false)
-    setWinOverlayLayout(null)
     if (celebrationTimerRef.current !== null) {
       window.clearTimeout(celebrationTimerRef.current)
       celebrationTimerRef.current = null
@@ -95,21 +63,23 @@ export function useWinCelebration({
     prevAllSolvedRef.current = allSolved
 
     if (!justSolved) return
-    setLockWinOverlayLayout(true)
-    updateWinOverlayLayout()
-    setShowWinOverlay(true)
     if (!hasFunFact) {
       setShowFunFact(true)
       return
     }
 
-    let raf: number | null = null
+    // Timers rather than requestAnimationFrame: the reveal is the payoff for
+    // solving the puzzle, and an rAF callback can be deferred indefinitely when
+    // the page isn't producing frames — which would strand the player on a
+    // solved board with nothing revealed.
+    let measureTimer: number | null = null
     let attempts = 0
     const startTimAnimation = () => {
+      measureTimer = null
       const anchor = funFactAnchorRef.current?.getBoundingClientRect()
-      if (!anchor && attempts < 8) {
+      if (!anchor && attempts < MEASURE_ATTEMPTS) {
         attempts += 1
-        raf = window.requestAnimationFrame(startTimAnimation)
+        measureTimer = window.setTimeout(startTimAnimation, MEASURE_RETRY_MS)
         return
       }
 
@@ -130,16 +100,15 @@ export function useWinCelebration({
       celebrationTimerRef.current = window.setTimeout(() => {
         setIsCelebrating(false)
         setShowFunFact(true)
-        setLockWinOverlayLayout(false)
         celebrationTimerRef.current = null
       }, 4200)
     }
-    raf = window.requestAnimationFrame(startTimAnimation)
+    startTimAnimation()
 
     return () => {
-      if (raf !== null) window.cancelAnimationFrame(raf)
+      if (measureTimer !== null) window.clearTimeout(measureTimer)
     }
-  }, [allSolved, hasFunFact, updateWinOverlayLayout, resetCelebration])
+  }, [allSolved, hasFunFact, resetCelebration])
 
   useEffect(
     () => () => {
@@ -150,41 +119,11 @@ export function useWinCelebration({
     [],
   )
 
-  useEffect(() => {
-    if (!showWinOverlay) return
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setShowWinOverlay(false)
-      }
-    }
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [showWinOverlay])
-
-  useEffect(() => {
-    if (!showWinOverlay || lockWinOverlayLayout) return
-    const handleLayout = () => {
-      updateWinOverlayLayout()
-    }
-    handleLayout()
-    window.addEventListener("resize", handleLayout)
-    window.addEventListener("scroll", handleLayout, true)
-    return () => {
-      window.removeEventListener("resize", handleLayout)
-      window.removeEventListener("scroll", handleLayout, true)
-    }
-  }, [showWinOverlay, lockWinOverlayLayout, updateWinOverlayLayout])
-
   return {
     isCelebrating,
     timPath,
-    showWinOverlay,
-    setShowWinOverlay,
     showFunFact,
-    winOverlayLayout,
-    updateWinOverlayLayout,
     funFactAnchorRef,
-    winSummaryAreaRef,
     resetCelebration,
   }
 }

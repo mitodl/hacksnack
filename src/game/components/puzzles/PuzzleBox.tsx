@@ -1,9 +1,10 @@
 import React from "react"
 import { TokenTitle } from "../TokenTitle"
-import { PuzzleCard } from "../../styled"
+import { CheckCircleIcon } from "../icons"
+import { PuzzleCard, PuzzleRowNumber, PuzzleRowContent } from "../../styled"
 
-// Shared chrome for every puzzle: the card surface plus the TokenTitle header.
-// The body of each puzzle is passed as children.
+// Shared chrome for every puzzle: the numbered row surface plus the TokenTitle
+// header. The clue and answer field of each puzzle are passed as children.
 export function PuzzleBox({
   label,
   stepIndex,
@@ -13,6 +14,7 @@ export function PuzzleBox({
   onToggleHint,
   forceHintButton,
   hintButtonLabel,
+  hintDescription,
   isSolved,
   children,
 }: {
@@ -24,23 +26,35 @@ export function PuzzleBox({
   onToggleHint?: () => void
   forceHintButton?: boolean
   hintButtonLabel?: string
+  hintDescription?: string
   isSolved?: boolean
   children: React.ReactNode
 }) {
   return (
-    <PuzzleCard>
-      <TokenTitle
-        label={label}
-        stepIndex={stepIndex}
-        totalSteps={totalSteps}
-        hint={hint}
-        hintShown={hintShown}
-        onToggleHint={onToggleHint}
-        forceHintButton={forceHintButton}
-        hintButtonLabel={hintButtonLabel}
-        isSolved={isSolved}
-      />
-      {children}
+    <PuzzleCard $solved={isSolved}>
+      <PuzzleRowNumber
+        $solved={isSolved}
+        {...(isSolved
+          ? { role: "img", "aria-label": "Solved" }
+          : { "aria-hidden": true })}
+      >
+        {isSolved ? <CheckCircleIcon /> : stepIndex + 1}
+      </PuzzleRowNumber>
+      <PuzzleRowContent>
+        <TokenTitle
+          label={label}
+          stepIndex={stepIndex}
+          totalSteps={totalSteps}
+          hint={hint}
+          hintShown={hintShown}
+          onToggleHint={onToggleHint}
+          forceHintButton={forceHintButton}
+          hintButtonLabel={hintButtonLabel}
+          hintDescription={hintDescription}
+          isSolved={isSolved}
+        />
+        {children}
+      </PuzzleRowContent>
     </PuzzleCard>
   )
 }

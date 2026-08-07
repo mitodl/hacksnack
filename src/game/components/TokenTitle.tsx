@@ -1,6 +1,15 @@
 import React from "react"
-import { TokenTitleWrap, TokenTitleRow, HintButton } from "../styled"
+import { HintIcon } from "./icons"
+import {
+  TokenTitleRow,
+  TokenLabel,
+  TokenSeparator,
+  TokenCounter,
+  HintButton,
+} from "../styled"
 
+// A puzzle row's header: the puzzle type, its position among the day's code
+// words, and the hint toggle.
 export function TokenTitle({
   label,
   stepIndex,
@@ -10,6 +19,7 @@ export function TokenTitle({
   onToggleHint,
   forceHintButton,
   hintButtonLabel,
+  hintDescription,
   isSolved,
 }: {
   label: string
@@ -20,22 +30,29 @@ export function TokenTitle({
   onToggleHint?: () => void
   forceHintButton?: boolean
   hintButtonLabel?: string
+  hintDescription?: string
   isSolved?: boolean
 }) {
   // Once a puzzle is solved there's nothing left to hint at, so hide the button.
   const hasHint = !isSolved && (!!hint?.trim() || !!forceHintButton)
   return (
-    <TokenTitleWrap>
-      <TokenTitleRow>
-        <span>
-          {label} • Token {stepIndex + 1} / {totalSteps}
-        </span>
-        {hasHint && (
-          <HintButton type="button" onClick={onToggleHint}>
-            {hintShown ? "Hide hint" : hintButtonLabel || "Get a hint"}
-          </HintButton>
-        )}
-      </TokenTitleRow>
-    </TokenTitleWrap>
+    <TokenTitleRow>
+      <TokenLabel>{label}</TokenLabel>
+      <TokenSeparator aria-hidden>•</TokenSeparator>
+      <TokenCounter>
+        Code word {stepIndex + 1} of {totalSteps}
+      </TokenCounter>
+      {hasHint && (
+        <HintButton
+          type="button"
+          onClick={onToggleHint}
+          title={hintDescription}
+          aria-label={`${hintShown ? "Hide" : "Show"} the ${label} hint`}
+        >
+          <HintIcon />
+          {hintShown ? "Hide hint" : hintButtonLabel || "Hint"}
+        </HintButton>
+      )}
+    </TokenTitleRow>
   )
 }
