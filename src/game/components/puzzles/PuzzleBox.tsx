@@ -1,10 +1,9 @@
 import React from "react"
 import { TokenTitle } from "../TokenTitle"
-import { CheckCircleIcon } from "../icons"
-import { PuzzleCard, PuzzleRowNumber, PuzzleRowContent } from "../../styled"
+import { PuzzleCard, PuzzleRowContent } from "../../styled"
 
-// Shared chrome for every puzzle: the numbered row surface plus the TokenTitle
-// header. The clue and answer field of each puzzle are passed as children.
+// Shared chrome for every puzzle: the row surface, its header, and below it the
+// clue and answer field passed as children.
 export function PuzzleBox({
   label,
   stepIndex,
@@ -32,29 +31,19 @@ export function PuzzleBox({
 }) {
   return (
     <PuzzleCard $solved={isSolved}>
-      <PuzzleRowNumber
-        $solved={isSolved}
-        {...(isSolved
-          ? { role: "img", "aria-label": "Solved" }
-          : { "aria-hidden": true })}
-      >
-        {isSolved ? <CheckCircleIcon /> : stepIndex + 1}
-      </PuzzleRowNumber>
-      <PuzzleRowContent>
-        <TokenTitle
-          label={label}
-          stepIndex={stepIndex}
-          totalSteps={totalSteps}
-          hint={hint}
-          hintShown={hintShown}
-          onToggleHint={onToggleHint}
-          forceHintButton={forceHintButton}
-          hintButtonLabel={hintButtonLabel}
-          hintDescription={hintDescription}
-          isSolved={isSolved}
-        />
-        {children}
-      </PuzzleRowContent>
+      <TokenTitle
+        label={label}
+        stepIndex={stepIndex}
+        totalSteps={totalSteps}
+        hint={hint}
+        hintShown={hintShown}
+        onToggleHint={onToggleHint}
+        forceHintButton={forceHintButton}
+        hintButtonLabel={hintButtonLabel}
+        hintDescription={hintDescription}
+        isSolved={isSolved}
+      />
+      <PuzzleRowContent>{children}</PuzzleRowContent>
     </PuzzleCard>
   )
 }

@@ -11,7 +11,7 @@ export function PuzzleInput({
   setInput,
   onSubmit,
   isSolved,
-  placeholder = "Enter your answer",
+  placeholder = "Type your answer",
   hint,
   hintShown,
   label,

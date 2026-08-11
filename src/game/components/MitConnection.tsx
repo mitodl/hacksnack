@@ -2,16 +2,14 @@ import React from "react"
 import { ExternalLinkIcon } from "./icons"
 import {
   RevealCard,
+  RevealTitleRow,
   RevealBadge,
-  RevealContent,
   RevealTitle,
-  RevealBody,
   RevealText,
   RevealLinkGroup,
   RevealLinkLabel,
   RevealLinkRow,
   RevealLink,
-  RevealName,
 } from "../styled"
 
 // Today's MIT connection, revealed inside the final-code panel once the code is
@@ -30,35 +28,29 @@ export function MitConnection({
 }) {
   return (
     <RevealCard>
-      <RevealBadge aria-hidden>🎉</RevealBadge>
-      <RevealContent>
+      <RevealTitleRow>
+        <RevealBadge aria-hidden>🎉</RevealBadge>
         <RevealTitle>Today&rsquo;s MIT connection unlocked</RevealTitle>
-        <RevealBody>
-          {text && <RevealText>{text}</RevealText>}
-          {courseName && (
-            <RevealLinkGroup>
-              <RevealLinkLabel>Explore related learning:</RevealLinkLabel>
-              <RevealLinkRow>
-                {courseLink ? (
-                  <>
-                    <RevealLink
-                      href={courseLink}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {courseName}
-                    </RevealLink>
-                    <ExternalLinkIcon />
-                  </>
-                ) : (
-                  <RevealName>{courseName}</RevealName>
-                )}
-              </RevealLinkRow>
-            </RevealLinkGroup>
-          )}
-          {children}
-        </RevealBody>
-      </RevealContent>
+      </RevealTitleRow>
+      {text && <RevealText>{text}</RevealText>}
+      {courseName && (
+        <RevealLinkGroup>
+          <RevealLinkLabel>Explore related learning:</RevealLinkLabel>
+          <RevealLinkRow>
+            {courseLink ? (
+              <>
+                <RevealLink href={courseLink} target="_blank" rel="noreferrer">
+                  {courseName}
+                </RevealLink>
+                <ExternalLinkIcon size={24} />
+              </>
+            ) : (
+              <RevealText>{courseName}</RevealText>
+            )}
+          </RevealLinkRow>
+        </RevealLinkGroup>
+      )}
+      {children}
     </RevealCard>
   )
 }

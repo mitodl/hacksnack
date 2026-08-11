@@ -616,9 +616,8 @@ export default function Game() {
                 <BoardHeadings>
                   <BoardHeadline>
                     {capitalize(countWord(clueCount))}{" "}
-                    {plural(clueCount, "clue")}. One hidden code.
-                    <br />
-                    Can you crack it?
+                    {plural(clueCount, "clue")}. One hidden code. Can you crack
+                    it?
                   </BoardHeadline>
                   <BoardSubhead>Solve the clues in any order</BoardSubhead>
                 </BoardHeadings>

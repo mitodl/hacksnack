@@ -6,6 +6,8 @@ import { theme } from "./theme"
 const CARD_SHADOW = "0 8px 10px rgba(120, 147, 172, 0.1)"
 const BUTTON_SHADOW =
   "0 2px 4px rgba(37, 38, 43, 0.1), 0 3px 8px rgba(37, 38, 43, 0.12)"
+// The cracked final-code panel is washed with its own green at 10%.
+const GREEN_TINT = "rgba(0, 128, 0, 0.1)"
 
 // ---------- UI Pieces ----------
 export const PdfViewerRoot = styled.div({
@@ -35,34 +37,29 @@ export const PdfStatus = styled.div({
   color: theme.custom.colors.silverGrayDark,
 })
 
-// The Unlock button: MIT red, 4px radius, a lock glyph and its label, at the
-// design's fixed 40px height / 119px minimum width.
+// The Unlock button: near-black, 4px radius, a lock glyph and its label. It
+// stretches to the height of the answer field beside it.
 export const StyledButton = styled.button<{ $solved?: boolean }>(
   ({ $solved }) => ({
-    ...theme.typography.button,
+    ...theme.typography.buttonLarge,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     gap: "8px",
     flexShrink: 0,
     boxSizing: "border-box",
-    height: "40px",
-    minWidth: "119px",
-    padding: "12px 16px 12px 12px",
+    alignSelf: "stretch",
+    padding: $solved ? "12px" : "12px 24px 12px 20px",
     borderRadius: "4px",
-    boxShadow: BUTTON_SHADOW,
+    boxShadow: $solved ? "none" : BUTTON_SHADOW,
     cursor: "pointer",
     transition: "background-color 150ms ease, transform 150ms ease",
-    // Solved, it reads "Unlocked" and is disabled — grey, not red.
-    backgroundColor: $solved
-      ? theme.custom.colors.silverGray
-      : theme.custom.colors.mitRed,
-    color: theme.custom.colors.white,
+    // Solved, it reads "Unlocked" as plain green text rather than a filled block.
+    backgroundColor: $solved ? "transparent" : theme.custom.colors.darkGray2,
+    color: $solved ? theme.custom.colors.green1 : theme.custom.colors.white,
     border: "none",
     ":hover": {
-      backgroundColor: $solved
-        ? theme.custom.colors.silverGray
-        : theme.custom.colors.black,
+      backgroundColor: $solved ? "transparent" : theme.custom.colors.black,
     },
     ":active": {
       transform: "scale(0.98)",
@@ -109,19 +106,19 @@ export const BoardMain = styled.div({
   display: "flex",
   flexDirection: "column",
   width: "100%",
-  maxWidth: "722px",
+  maxWidth: "812px",
 })
 
 export const BoardCard = styled.div({
   display: "flex",
   flexDirection: "column",
-  gap: "32px",
+  gap: "24px",
   padding: "40px",
-  borderRadius: "4px",
+  // Square-bottomed: the puzzle-date controls sit directly beneath the card.
+  borderRadius: "4px 4px 0 0",
   backgroundColor: theme.custom.colors.white,
   boxShadow: CARD_SHADOW,
   [theme.breakpoints.down("sm")]: {
-    gap: "24px",
     padding: "24px",
   },
 })
@@ -130,7 +127,7 @@ export const BoardHeaderRow = styled.div({
   display: "flex",
   alignItems: "flex-start",
   justifyContent: "space-between",
-  gap: "12px",
+  gap: "4px",
   flexWrap: "wrap",
 })
 
@@ -138,105 +135,110 @@ export const BoardHeadings = styled.div({
   display: "flex",
   flex: 1,
   flexDirection: "column",
-  gap: "12px",
+  gap: "4px",
   minWidth: "240px",
 })
 
 export const BoardHeadline = styled.h1({
-  ...theme.typography.h4,
+  ...theme.typography.h5,
   margin: 0,
   color: theme.custom.colors.darkGray2,
 })
 
 export const BoardSubhead = styled.p({
-  ...theme.typography.h5,
+  ...theme.typography.subtitle1,
   margin: 0,
-  color: theme.custom.colors.purple,
+  color: theme.custom.colors.red,
 })
 
 export const SolvedPill = styled.div({
   display: "flex",
   alignItems: "center",
+  justifyContent: "center",
   gap: "8px",
   flexShrink: 0,
   padding: "12px 16px",
-  borderRadius: "8px",
-  border: `1px solid ${theme.custom.colors.silverGrayLight}`,
+  borderRadius: "4px",
+  border: `1px solid ${theme.custom.colors.lightGray2}`,
   backgroundColor: theme.custom.colors.white,
 })
 
 export const SolvedPillText = styled.span({
-  ...theme.typography.body2Bold,
+  ...theme.typography.subtitle2,
   whiteSpace: "nowrap",
   color: theme.custom.colors.darkGray2,
 })
 
 // ---------- Puzzle components ----------
-// One puzzle row: the numbered badge alongside the clue and its answer field.
-// Solved, it gains a 2px green outline and its number becomes a check.
+// One puzzle row: a stack of header, clue and answer field on a grey surface.
+// Solved, it gains a green outline and its number becomes a check.
 export const PuzzleCard = styled.div<{ $solved?: boolean }>(({ $solved }) => ({
   display: "flex",
+  flexDirection: "column",
   alignItems: "flex-start",
-  gap: "16px",
-  padding: "16px",
+  gap: "24px",
+  padding: "32px",
   borderRadius: "8px",
   border: $solved
-    ? `2px solid ${theme.custom.colors.green}`
-    : `1px solid ${theme.custom.colors.lightGray2}`,
+    ? `1px solid ${theme.custom.colors.green1}`
+    : "1px solid transparent",
   backgroundColor: theme.custom.colors.lightGray1,
+  [theme.breakpoints.down("sm")]: {
+    gap: "16px",
+    padding: "20px",
+  },
 }))
 
+// The count sits inline at the head of the row rather than in its own column.
 export const PuzzleRowNumber = styled.div<{ $solved?: boolean }>(
   ({ $solved }) => ({
-    ...theme.typography.h5,
+    ...theme.typography.body3Bold,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
     boxSizing: "border-box",
-    width: "32px",
-    height: "32px",
-    borderRadius: "32px",
+    width: "26px",
+    height: "26px",
+    borderRadius: "100px",
+    textAlign: "center",
     color: theme.custom.colors.white,
-    // The check is drawn 40px wide and deliberately overhangs this 32px slot,
-    // so a solved row carries no filled circle behind it.
-    ...($solved
-      ? {}
-      : { backgroundColor: theme.custom.colors.silverGrayDark }),
+    backgroundColor: $solved
+      ? theme.custom.colors.green1
+      : theme.custom.colors.darkGray2,
   }),
 )
 
 export const PuzzleRowContent = styled.div({
   display: "flex",
-  flex: 1,
   flexDirection: "column",
-  // The design puts 8px between a row's header and its clue, and 12px before
-  // the answer field; InputRow makes up the extra 4px.
-  gap: "8px",
+  gap: "24px",
+  width: "100%",
   minWidth: 0,
+  [theme.breakpoints.down("sm")]: {
+    gap: "16px",
+  },
 })
 
 export const TokenTitleRow = styled.div({
   display: "flex",
   alignItems: "center",
-  gap: "12px",
+  gap: "10px",
+  width: "100%",
 })
 
-export const TokenLabel = styled.span({
-  ...theme.typography.subtitle1,
-  color: theme.custom.colors.darkGray2,
-})
-
-export const TokenSeparator = styled.span({
-  ...theme.typography.body2,
-  color: theme.custom.colors.silverGrayDark,
-})
-
-export const TokenCounter = styled.span({
+// The type and its position read as one sentence — "Rebus • Code word 1 of 3" —
+// with only the type in the darker colour.
+export const TokenCounter = styled.p({
   ...theme.typography.body1,
   flex: 1,
   minWidth: 0,
+  margin: 0,
   color: theme.custom.colors.silverGrayDark,
+})
+
+export const TokenLabel = styled.span({
+  color: theme.custom.colors.darkGray2,
 })
 
 export const HintButton = styled.button({
@@ -259,29 +261,33 @@ export const HintButton = styled.button({
 })
 
 export const QuestionHeading = styled.h2({
-  ...theme.typography.subhead1,
+  ...theme.typography.h5,
   margin: 0,
   color: theme.custom.colors.darkGray2,
 })
 
-// Rebus clues are a row of emoji and operator tokens at two different sizes.
+// Rebus clues are a row of pictures and the operators joining them, the
+// pictures set larger than the operators.
 export const RebusRow = styled.div({
   display: "flex",
   alignItems: "center",
   flexWrap: "wrap",
-  gap: "12px",
+  gap: "24px",
 })
 
+// The design sets each picture 38px tall; the operators between them are
+// smaller, so the pictures carry the clue.
 export const RebusEmoji = styled.span({
   fontFamily: theme.typography.fontFamily,
   fontWeight: theme.typography.fontWeightMedium,
-  fontSize: "40px",
-  lineHeight: "60px",
+  fontSize: "38px",
+  lineHeight: "38px",
   color: theme.custom.colors.darkGray2,
 })
 
 export const RebusOperator = styled.span({
-  ...theme.typography.h2,
+  ...theme.typography.h4,
+  textAlign: "center",
   color: theme.custom.colors.darkGray2,
 })
 
@@ -294,36 +300,36 @@ export const EquationPrompt = styled.div({
   color: theme.custom.colors.darkGray2,
 })
 
-// The scrambled letters, spread out with the design's one-em tracking. Narrow
-// screens tighten it so a typical word still fits the row.
+// The scrambled letters, spread apart so each reads as its own tile. Narrow
+// screens tighten the tracking so a typical word still fits the row.
 export const ScrambleClue = styled.div({
   ...theme.typography.h2,
-  letterSpacing: "34px",
+  letterSpacing: "12px",
   overflowX: "auto",
   whiteSpace: "nowrap",
   color: theme.custom.colors.darkGray2,
   [theme.breakpoints.down("sm")]: {
-    letterSpacing: "12px",
+    letterSpacing: "8px",
   },
 })
 
 export const InputRow = styled.div({
   display: "flex",
-  alignItems: "flex-start",
-  gap: "12px",
-  marginTop: "4px",
+  alignItems: "stretch",
+  gap: "16px",
+  width: "100%",
 })
 
 // Solved, the field keeps its white surface but states the answer in bold green
 // caps.
 export const TextInput = styled.input<{ $solved?: boolean }>(({ $solved }) => ({
-  ...theme.typography.body2,
+  ...theme.typography.body1,
   flex: 1,
   minWidth: 0,
   boxSizing: "border-box",
-  height: "40px",
-  padding: "8px 12px",
-  borderRadius: "4px",
+  height: "56px",
+  padding: "8px 16px",
+  borderRadius: "8px",
   border: `1px solid ${theme.custom.colors.silverGrayLight}`,
   backgroundColor: theme.custom.colors.white,
   color: theme.custom.colors.darkGray2,
@@ -331,7 +337,7 @@ export const TextInput = styled.input<{ $solved?: boolean }>(({ $solved }) => ({
     color: theme.custom.colors.silverGrayDark,
   },
   ":focus": {
-    outline: `2px solid ${theme.custom.colors.mitRed}`,
+    outline: `2px solid ${theme.custom.colors.darkGray2}`,
     outlineOffset: "-1px",
   },
   ":disabled": {
@@ -363,19 +369,43 @@ export const SmallPrompt = styled.p({
 })
 
 // ---------- Final code ----------
-// Once unlocked the panel grows a little bottom padding to sit under the
+// While the code is incomplete the panel is only an outline, set apart from the
+// solvable rows by its dashes. Cracked, it fills with green and holds the
 // revealed MIT connection.
 export const FinalPanel = styled.div<{ $unlocked?: boolean }>(
   ({ $unlocked }) => ({
     display: "flex",
+    flexDirection: "column",
     alignItems: "flex-start",
-    gap: "8px",
-    padding: $unlocked ? "16px 16px 24px" : "16px",
+    gap: $unlocked ? "32px" : "24px",
+    padding: "32px",
     borderRadius: "8px",
-    border: `1px solid ${theme.custom.colors.purpleLight}`,
-    backgroundColor: theme.custom.colors.purpleTint,
+    border: $unlocked
+      ? `1px solid ${theme.custom.colors.green1}`
+      : `1px dashed ${theme.custom.colors.darkGray1}`,
+    backgroundColor: $unlocked ? GREEN_TINT : "transparent",
+    [theme.breakpoints.down("sm")]: {
+      gap: "16px",
+      padding: "20px",
+    },
   }),
 )
+
+// The heading and slots, grouped so the revealed connection sits below them
+// with the panel's wider gap.
+export const FinalPuzzle = styled.div({
+  display: "flex",
+  flexDirection: "column",
+  gap: "24px",
+  width: "100%",
+})
+
+export const FinalHeader = styled.div({
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  width: "100%",
+})
 
 export const FinalBadge = styled.div({
   display: "flex",
@@ -383,77 +413,71 @@ export const FinalBadge = styled.div({
   justifyContent: "center",
   flexShrink: 0,
   boxSizing: "border-box",
-  width: "32px",
-  height: "32px",
-  borderRadius: "32px",
-  backgroundColor: theme.custom.colors.purple,
+  width: "40px",
+  height: "40px",
+  borderRadius: "100px",
+  backgroundColor: theme.custom.colors.red,
 })
 
-export const FinalContent = styled.div<{ $unlocked?: boolean }>(
-  ({ $unlocked }) => ({
-    display: "flex",
-    flex: 1,
-    flexDirection: "column",
-    gap: $unlocked ? "16px" : "8px",
-    minWidth: 0,
-  }),
-)
-
-// The heading, note and slot row, grouped so the revealed connection sits below
-// them with the wider gap.
-export const FinalSummary = styled.div({
+export const FinalContent = styled.div({
   display: "flex",
+  flex: 1,
   flexDirection: "column",
-  gap: "8px",
+  justifyContent: "center",
+  minWidth: 0,
 })
 
 export const FinalTitle = styled.h2({
   ...theme.typography.h5,
   margin: 0,
-  color: theme.custom.colors.darkGray2,
+  color: theme.custom.colors.black,
 })
 
 export const FinalNote = styled.p({
-  ...theme.typography.body2,
+  ...theme.typography.body2Loose,
   margin: 0,
-  color: theme.custom.colors.darkGray2,
+  color: theme.custom.colors.black,
 })
 
 export const FinalSlotsRow = styled.div({
   display: "flex",
   alignItems: "center",
-  gap: "8px",
+  justifyContent: "center",
+  flexWrap: "wrap",
+  gap: "48px",
+  width: "100%",
+  [theme.breakpoints.down("sm")]: {
+    gap: "20px",
+  },
 })
 
 export const FinalSlots = styled.div({
   display: "flex",
-  flex: 1,
   alignItems: "center",
-  gap: "16px",
-  minWidth: 0,
+  justifyContent: "center",
+  flexWrap: "wrap",
+  gap: "48px",
+  [theme.breakpoints.down("sm")]: {
+    gap: "20px",
+  },
 })
 
+// Each code word sits on a rule rather than in a box. The design's 99px is a
+// minimum, not a cap: it keeps the three blanks even while empty, and the rule
+// grows with a code word longer than the design's samples rather than clipping
+// it.
 export const FinalSlot = styled.div<{ $filled?: boolean }>(({ $filled }) => ({
+  ...theme.typography.h5,
   display: "flex",
-  flex: 1,
   alignItems: "center",
   justifyContent: "center",
   boxSizing: "border-box",
-  minWidth: 0,
-  height: "48px",
-  padding: "0 8px",
-  borderRadius: "4px",
-  border: `2px solid ${theme.custom.colors.purpleLight}`,
-  backgroundColor: theme.custom.colors.purpleTintLight,
-  color: theme.custom.colors.purpleDark,
-  // Solved code words are set in caps at the heading scale so they fit the
-  // slot; the unsolved "- - -" placeholder keeps the design's display size.
-  ...($filled
-    ? { ...theme.typography.h5, textTransform: "uppercase" as const }
-    : theme.typography.h2),
-  overflow: "hidden",
+  minWidth: "99px",
+  padding: "4px 24px",
+  borderBottom: `1px solid ${theme.custom.colors.black}`,
+  color: theme.custom.colors.black,
+  ...($filled ? { textTransform: "uppercase" as const } : {}),
   whiteSpace: "nowrap",
-  textOverflow: "ellipsis",
 }))
 
 // A solved slot links out to the OCW courses that mention its code word.
@@ -467,9 +491,7 @@ export const FinalSlotButton = styled.button({
   // would leave a clickable code word in mixed case beside upper-case ones.
   textTransform: "inherit",
   cursor: "pointer",
-  overflow: "hidden",
   whiteSpace: "nowrap",
-  textOverflow: "ellipsis",
   ":hover": {
     textDecoration: "underline",
   },
@@ -480,58 +502,45 @@ export const FinalLock = styled.div({
   alignItems: "center",
   justifyContent: "center",
   flexShrink: 0,
-  boxSizing: "border-box",
-  width: "72px",
-  height: "60px",
-  padding: "2px 7px",
 })
 
 // ---------- Today's MIT connection ----------
-// Revealed inside the final-code panel once the code is cracked.
+// Revealed inside the final-code panel once the code is cracked: a plain white
+// card stacking the headline, the fact, and the course it comes from.
 export const RevealCard = styled.div({
   display: "flex",
-  alignItems: "flex-start",
-  gap: "8px",
-  padding: "16px",
+  flexDirection: "column",
+  gap: "24px",
+  padding: "24px",
   borderRadius: "4px",
-  border: `2px solid ${theme.custom.colors.purpleLight}`,
+  border: `1px solid ${theme.custom.colors.silverGrayLight}`,
   backgroundColor: theme.custom.colors.white,
+  width: "100%",
+  boxSizing: "border-box",
 })
 
-export const RevealBadge = styled.div({
+export const RevealTitleRow = styled.div({
+  display: "flex",
+  alignItems: "center",
+  gap: "16px",
+  width: "100%",
+})
+
+export const RevealBadge = styled.span({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   flexShrink: 0,
-  boxSizing: "border-box",
-  width: "80px",
-  height: "80px",
-  padding: "8px",
-  borderRadius: "40px",
-  border: `1px solid ${theme.custom.colors.silverGrayLight}`,
-  backgroundColor: theme.custom.colors.white,
   fontSize: "40px",
-  lineHeight: "26px",
-})
-
-export const RevealContent = styled.div({
-  display: "flex",
-  flex: 1,
-  flexDirection: "column",
-  gap: "8px",
-  minWidth: 0,
+  lineHeight: "normal",
 })
 
 export const RevealTitle = styled.h2({
   ...theme.typography.h5,
+  flex: 1,
+  minWidth: 0,
   margin: 0,
-  color: theme.custom.colors.purple,
-})
-
-export const RevealBody = styled.div({
-  display: "flex",
-  flexDirection: "column",
-  gap: "12px",
+  color: theme.custom.colors.red,
 })
 
 export const RevealText = styled.p({
@@ -544,22 +553,23 @@ export const RevealLinkGroup = styled.div({
   display: "flex",
   flexDirection: "column",
   gap: "4px",
+  width: "100%",
 })
 
 export const RevealLinkLabel = styled.p({
-  ...theme.typography.body2Bold,
+  ...theme.typography.subtitle1,
   margin: 0,
   color: theme.custom.colors.darkGray2,
 })
 
 export const RevealLinkRow = styled.div({
   display: "flex",
-  alignItems: "center",
-  gap: "4px",
+  alignItems: "flex-start",
+  gap: "8px",
 })
 
 export const RevealLink = styled.a({
-  ...theme.typography.body2,
+  ...theme.typography.body2Loose,
   color: theme.custom.colors.red,
   textDecoration: "underline",
   ":hover": {
@@ -731,16 +741,13 @@ export const LearnLink = styled.a({
 export const Stack = styled.div({
   display: "flex",
   flexDirection: "column",
-  gap: "32px",
-  [theme.breakpoints.down("sm")]: {
-    gap: "24px",
-  },
+  gap: "16px",
 })
 
 // ---------- How to play ----------
 export const BoardSide = styled.div({
   width: "100%",
-  maxWidth: "304px",
+  maxWidth: "344px",
   flexShrink: 0,
 })
 
@@ -769,6 +776,18 @@ export const SideTitle = styled.h2({
 export const SideBody = styled.p({
   ...theme.typography.body2Loose,
   margin: 0,
+  color: theme.custom.colors.darkGray2,
+})
+
+// The per-puzzle-type lines are a bulleted list.
+export const SideList = styled.ul({
+  ...theme.typography.body2Loose,
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+  listStyle: "disc",
+  margin: 0,
+  paddingLeft: "21px",
   color: theme.custom.colors.darkGray2,
 })
 

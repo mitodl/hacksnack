@@ -43,13 +43,6 @@ const colors = {
   // Solved states: the row border and the check, and the solved answer text.
   green: "#00AD00",
   green1: "#008000",
-  purple: "#9933FF",
-  purpleLight: "#CC99FF",
-  purpleDark: "#3E006B",
-  // The final-code panel and its slots are drawn in Figma as white at 90% /
-  // 94% opacity over `purple`; these are those blends flattened.
-  purpleTint: "#F5EBFF",
-  purpleTintLight: "#F9F3FF",
 } as const
 
 export const typography = {
@@ -71,7 +64,11 @@ export const typography = {
   // 14/22 — the looser body used by the "How to play" panel.
   body2Loose: variant(fontWeights.roman, 14, 22),
   body3: variant(fontWeights.roman, 12, 16),
+  // 12/16 bold — the numeral in a row's count badge.
+  body3Bold: variant(fontWeights.bold, 12, 16),
   button: variant(fontWeights.medium, 14, 18, { textTransform: "none" }),
+  // "Button L" — the Unlock button's label.
+  buttonLarge: variant(fontWeights.medium, 16, 16, { textTransform: "none" }),
 } as const
 
 // MUI-compatible breakpoint helpers (only `up` is used by the game, but `down`

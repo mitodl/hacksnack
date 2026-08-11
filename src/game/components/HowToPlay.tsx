@@ -6,6 +6,7 @@ import {
   SideTitleRow,
   SideTitle,
   SideBody,
+  SideList,
   SideTerm,
 } from "../styled"
 import type { GroupKey } from "../types"
@@ -38,12 +39,14 @@ export function HowToPlay({ groups }: { groups: GroupKey[] }) {
         to reveal the final code. Crack the final code to unlock today's MIT
         connection
       </SideBody>
-      {groups.map((group) => (
-        <SideBody key={group}>
-          <SideTerm>{PUZZLE_HELP[group].term}:</SideTerm>{" "}
-          {PUZZLE_HELP[group].text}
-        </SideBody>
-      ))}
+      <SideList>
+        {groups.map((group) => (
+          <li key={group}>
+            <SideTerm>{PUZZLE_HELP[group].term}:</SideTerm>{" "}
+            {PUZZLE_HELP[group].text}
+          </li>
+        ))}
+      </SideList>
     </SideCard>
   )
 }

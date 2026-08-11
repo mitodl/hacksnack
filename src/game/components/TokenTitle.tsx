@@ -1,15 +1,15 @@
 import React from "react"
-import { HintIcon } from "./icons"
+import { HintIcon, CheckIcon } from "./icons"
 import {
   TokenTitleRow,
-  TokenLabel,
-  TokenSeparator,
+  PuzzleRowNumber,
   TokenCounter,
+  TokenLabel,
   HintButton,
 } from "../styled"
 
-// A puzzle row's header: the puzzle type, its position among the day's code
-// words, and the hint toggle.
+// A puzzle row's header: its position as a numbered badge, then the puzzle type
+// and which code word it unlocks, then the hint toggle.
 export function TokenTitle({
   label,
   stepIndex,
@@ -37,10 +37,17 @@ export function TokenTitle({
   const hasHint = !isSolved && (!!hint?.trim() || !!forceHintButton)
   return (
     <TokenTitleRow>
-      <TokenLabel>{label}</TokenLabel>
-      <TokenSeparator aria-hidden>•</TokenSeparator>
+      <PuzzleRowNumber
+        $solved={isSolved}
+        {...(isSolved
+          ? { role: "img", "aria-label": "Solved" }
+          : { "aria-hidden": true })}
+      >
+        {isSolved ? <CheckIcon /> : stepIndex + 1}
+      </PuzzleRowNumber>
       <TokenCounter>
-        Code word {stepIndex + 1} of {totalSteps}
+        <TokenLabel>{label}</TokenLabel>
+        {` • Code word ${stepIndex + 1} of ${totalSteps}`}
       </TokenCounter>
       {hasHint && (
         <HintButton

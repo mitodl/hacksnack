@@ -1,10 +1,11 @@
 import React from "react"
-import { TrophyIcon, BigLockIcon, BigUnlockedIcon } from "./icons"
+import { TrophyIcon, LockIcon, UnlockedIcon } from "./icons"
 import {
   FinalPanel,
+  FinalPuzzle,
+  FinalHeader,
   FinalBadge,
   FinalContent,
-  FinalSummary,
   FinalTitle,
   FinalNote,
   FinalSlotsRow,
@@ -23,8 +24,8 @@ export type FinalCodeSlot = {
   label: string
 }
 
-// The final-code panel: one slot per code word, a padlock that springs open once
-// the code is complete, and — then — today's MIT connection below.
+// The final-code panel: one slot per code word, and — once the code is
+// complete — today's MIT connection below.
 export function FinalCode({
   slots,
   note,
@@ -42,47 +43,53 @@ export function FinalCode({
 }) {
   return (
     <FinalPanel $unlocked={unlocked} ref={anchorRef}>
-      <FinalBadge>
-        <TrophyIcon />
-      </FinalBadge>
-      <FinalContent $unlocked={unlocked}>
-        <FinalSummary>
-          <FinalTitle>Final Code</FinalTitle>
-          <FinalNote>{note}</FinalNote>
-          <FinalSlotsRow>
-            <FinalSlots>
-              {slots.map((slot) => (
-                <FinalSlot key={slot.key} $filled={!!slot.word}>
-                  {slot.word && slot.onClick ? (
-                    <FinalSlotButton
-                      type="button"
-                      onClick={slot.onClick}
-                      title={`OCW courses mentioning ${slot.word}`}
-                    >
-                      {slot.word}
-                    </FinalSlotButton>
-                  ) : (
-                    <span
-                      aria-label={
-                        slot.word ? undefined : `${slot.label} not solved yet`
-                      }
-                    >
-                      {slot.word || "- - -"}
-                    </span>
-                  )}
-                </FinalSlot>
-              ))}
-            </FinalSlots>
-            <FinalLock
-              role="img"
-              aria-label={unlocked ? "Final code unlocked" : "Final code locked"}
-            >
-              {unlocked ? <BigUnlockedIcon /> : <BigLockIcon />}
-            </FinalLock>
-          </FinalSlotsRow>
-        </FinalSummary>
-        {children}
-      </FinalContent>
+      <FinalPuzzle>
+        <FinalHeader>
+          <FinalBadge>
+            <TrophyIcon />
+          </FinalBadge>
+          <FinalContent>
+            <FinalTitle>Final Code</FinalTitle>
+            <FinalNote>{note}</FinalNote>
+          </FinalContent>
+        </FinalHeader>
+        <FinalSlotsRow>
+          <FinalSlots>
+            {slots.map((slot) => (
+              <FinalSlot key={slot.key} $filled={!!slot.word}>
+                {slot.word && slot.onClick ? (
+                  <FinalSlotButton
+                    type="button"
+                    onClick={slot.onClick}
+                    title={`OCW courses mentioning ${slot.word}`}
+                  >
+                    {slot.word}
+                  </FinalSlotButton>
+                ) : (
+                  <span
+                    aria-label={
+                      slot.word ? undefined : `${slot.label} not solved yet`
+                    }
+                  >
+                    {slot.word || "- - - - -"}
+                  </span>
+                )}
+              </FinalSlot>
+            ))}
+          </FinalSlots>
+          <FinalLock
+            role="img"
+            aria-label={unlocked ? "Final code unlocked" : "Final code locked"}
+          >
+            {unlocked ? (
+              <UnlockedIcon color="black" />
+            ) : (
+              <LockIcon color="black" />
+            )}
+          </FinalLock>
+        </FinalSlotsRow>
+      </FinalPuzzle>
+      {children}
     </FinalPanel>
   )
 }
