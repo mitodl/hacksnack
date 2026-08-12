@@ -1,6 +1,6 @@
 {
   "name": "@mitodl/hacksnack",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Hack Snack — a daily MIT OpenCourseWare puzzle game, packaged as a React component.",
   "type": "module",
   "license": "BSD-3-Clause",
