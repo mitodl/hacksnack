@@ -714,18 +714,6 @@ export const ConfettiPiece = styled.span({
   borderRadius: "2px",
 })
 
-export const TimImg = styled.img({
-  pointerEvents: "none",
-  position: "fixed",
-  left: 0,
-  top: 0,
-  zIndex: 80,
-  height: "64px",
-  width: "64px",
-  borderRadius: "12px",
-  objectFit: "cover",
-  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-})
 
 export const LearnLink = styled.a({
   ...theme.typography.body2,

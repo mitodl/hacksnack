@@ -37,7 +37,6 @@ import {
   GameRoot,
   ConfettiLayer,
   ConfettiPiece,
-  TimImg,
   BoardPage,
   BoardContainer,
   BoardMain,
@@ -411,13 +410,7 @@ export default function Game() {
   const factIsPdf = isPdfUrl(factEmbedUrl)
   const hasFunFact = !!(factText || hasFactLink)
 
-  const {
-    isCelebrating,
-    timPath,
-    showFunFact,
-    funFactAnchorRef,
-    resetCelebration,
-  } = useWinCelebration({ allSolved, hasFunFact })
+  const { isCelebrating, resetCelebration } = useWinCelebration({ allSolved })
 
   // A solved code word can be explored: clicking its slot lists the OCW
   // courses that mention it. Only the word puzzles have such a list.
@@ -547,17 +540,6 @@ export default function Game() {
   return (
     <GameRoot>
       <style>{`
-        @keyframes tim-funfact-wipe {
-          0% {
-            transform: translate(var(--tim-start-x), var(--tim-start-y)) rotate(-18deg) scale(0.9);
-          }
-          58% {
-            transform: translate(var(--tim-mid-x), var(--tim-mid-y)) rotate(24deg) scale(2.1);
-          }
-          100% {
-            transform: translate(var(--tim-end-x), var(--tim-end-y)) rotate(0deg) scale(1);
-          }
-        }
         @keyframes confetti-fall {
           0% {
             transform: translate3d(0, -12vh, 0) rotate(0deg);
@@ -573,40 +555,22 @@ export default function Game() {
         }
       `}</style>
       {isCelebrating && (
-        <>
-          <ConfettiLayer>
-            {confettiPieces.map((piece) => (
-              <ConfettiPiece
-                key={piece.id}
-                style={
-                  {
-                    left: `${piece.left}%`,
-                    backgroundColor: piece.color,
-                    animation: `confetti-fall ${piece.duration}ms linear ${piece.delay}ms forwards`,
-                    "--drift": `${piece.drift}px`,
-                    transform: `rotate(${piece.rotate}deg)`,
-                  } as React.CSSProperties
-                }
-              />
-            ))}
-          </ConfettiLayer>
-          <TimImg
-            src={asset("tim.png")}
-            alt="Tim celebration"
-            style={
-              {
-                animation:
-                  "tim-funfact-wipe 4100ms cubic-bezier(0.24, 0.88, 0.2, 1) forwards",
-                "--tim-start-x": `${timPath.startX}px`,
-                "--tim-start-y": `${timPath.startY}px`,
-                "--tim-mid-x": `${timPath.midX}px`,
-                "--tim-mid-y": `${timPath.midY}px`,
-                "--tim-end-x": `${timPath.endX}px`,
-                "--tim-end-y": `${timPath.endY}px`,
-              } as React.CSSProperties
-            }
-          />
-        </>
+        <ConfettiLayer>
+          {confettiPieces.map((piece) => (
+            <ConfettiPiece
+              key={piece.id}
+              style={
+                {
+                  left: `${piece.left}%`,
+                  backgroundColor: piece.color,
+                  animation: `confetti-fall ${piece.duration}ms linear ${piece.delay}ms forwards`,
+                  "--drift": `${piece.drift}px`,
+                  transform: `rotate(${piece.rotate}deg)`,
+                } as React.CSSProperties
+              }
+            />
+          ))}
+        </ConfettiLayer>
       )}
       <BoardPage>
         <BoardContainer>
@@ -655,10 +619,8 @@ export default function Game() {
                       "clue",
                     )} to reveal the final code and today's MIT connection.`}
                     unlocked={allSolved}
-                    anchorRef={funFactAnchorRef}
                   >
-                    {/* Held back until the celebrating Tim lands on the panel */}
-                    {allSolved && hasFunFact && showFunFact && (
+                    {allSolved && hasFunFact && (
                       <MitConnection
                         text={factText}
                         courseName={pickerRow?.fact?.name}
