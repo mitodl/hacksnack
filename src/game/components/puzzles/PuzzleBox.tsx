@@ -1,9 +1,9 @@
 import React from "react"
 import { TokenTitle } from "../TokenTitle"
-import { PuzzleCard } from "../../styled"
+import { PuzzleCard, PuzzleRowContent } from "../../styled"
 
-// Shared chrome for every puzzle: the card surface plus the TokenTitle header.
-// The body of each puzzle is passed as children.
+// Shared chrome for every puzzle: the row surface, its header, and below it the
+// clue and answer field passed as children.
 export function PuzzleBox({
   label,
   stepIndex,
@@ -13,6 +13,7 @@ export function PuzzleBox({
   onToggleHint,
   forceHintButton,
   hintButtonLabel,
+  hintDescription,
   isSolved,
   children,
 }: {
@@ -24,11 +25,12 @@ export function PuzzleBox({
   onToggleHint?: () => void
   forceHintButton?: boolean
   hintButtonLabel?: string
+  hintDescription?: string
   isSolved?: boolean
   children: React.ReactNode
 }) {
   return (
-    <PuzzleCard>
+    <PuzzleCard $solved={isSolved}>
       <TokenTitle
         label={label}
         stepIndex={stepIndex}
@@ -38,9 +40,10 @@ export function PuzzleBox({
         onToggleHint={onToggleHint}
         forceHintButton={forceHintButton}
         hintButtonLabel={hintButtonLabel}
+        hintDescription={hintDescription}
         isSolved={isSolved}
       />
-      {children}
+      <PuzzleRowContent>{children}</PuzzleRowContent>
     </PuzzleCard>
   )
 }

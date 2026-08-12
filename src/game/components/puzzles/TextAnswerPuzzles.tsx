@@ -1,11 +1,7 @@
 import React from "react"
 import { TextAnswerPuzzle } from "./TextAnswerPuzzle"
-import {
-  QuestionHeading,
-  EmojiPrompt,
-  EquationPrompt,
-  MonoClue,
-} from "../../styled"
+import { RebusClue } from "./RebusClue"
+import { QuestionHeading, EquationPrompt, ScrambleClue } from "../../styled"
 import type {
   RiddleType,
   EmojiType,
@@ -36,7 +32,7 @@ export const PuzzleEmoji = ({
   <TextAnswerPuzzle
     {...rest}
     label="Rebus"
-    clue={<EmojiPrompt>{emoji.prompt}</EmojiPrompt>}
+    clue={<RebusClue prompt={emoji.prompt} />}
   />
 )
 
@@ -47,8 +43,7 @@ export const PuzzleScramble = ({
   <TextAnswerPuzzle
     {...rest}
     label="Unscramble"
-    clue={<MonoClue>{scramble.scrambled}</MonoClue>}
-    placeholder="Your word"
+    clue={<ScrambleClue>{scramble.scrambled}</ScrambleClue>}
   />
 )
 

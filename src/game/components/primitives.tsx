@@ -1,12 +1,5 @@
 import React from "react"
-import { CardRoot, StyledButton } from "../styled"
-
-export function Card({
-  children,
-  className = "",
-}: React.PropsWithChildren<{ className?: string }>) {
-  return <CardRoot className={className}>{children}</CardRoot>
-}
+import { StyledButton } from "../styled"
 
 export function Button({
   children,

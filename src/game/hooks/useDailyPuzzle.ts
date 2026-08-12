@@ -91,8 +91,9 @@ export function useDailyPuzzle({
   const pickerScramble = useMemo<ScrambleType | null>(() => {
     const s = pickerRow?.puzzles?.scramble
     if (!usePicker || !s?.clue || !s.answer) return null
-    const spaced = s.clue.toUpperCase().split("").join(" ")
-    return { scrambled: spaced, answer: s.answer }
+    // The letters are spread out by the clue's letter-spacing, so they are not
+    // spaced here.
+    return { scrambled: s.clue.toUpperCase(), answer: s.answer }
   }, [usePicker, pickerRow])
   const pickerSymbol = useMemo<SymbolInputTask | null>(() => {
     const s = pickerRow?.puzzles?.symbol

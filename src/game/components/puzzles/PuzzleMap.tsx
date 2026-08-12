@@ -155,6 +155,7 @@ export function PuzzleMap({
         isSolved={isSolved}
         hint={hint}
         hintShown={hintShown}
+        label="Map"
       />
       {mapMessage && <Message>{mapMessage}</Message>}
       {message && <Message>{message}</Message>}

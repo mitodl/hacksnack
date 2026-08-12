@@ -43,7 +43,7 @@ export function PuzzleImage({
       hintShown={hintShown}
       onToggleHint={handleHintToggle}
       forceHintButton
-      hintButtonLabel="Get a hint (orient all tiles the right way)"
+      hintDescription="Orient all tiles the right way"
       isSolved={solved || isSolved}
     >
       {solved || isSolved ? (

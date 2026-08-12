@@ -20,7 +20,7 @@ export function TextAnswerPuzzle({
   hint,
   hintShown,
   onToggleHint,
-  placeholder = "Type your answer",
+  placeholder,
 }: {
   label: string
   clue: React.ReactNode
@@ -45,6 +45,7 @@ export function TextAnswerPuzzle({
         placeholder={placeholder}
         hint={hint}
         hintShown={hintShown}
+        label={label}
       />
       {message && <Message>{message}</Message>}
     </PuzzleBox>
