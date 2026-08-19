@@ -7,10 +7,14 @@ import { titleCase, passwordDisplay } from "./lib/strings"
 import { formatDateKey, startOfDay } from "./lib/dates"
 import { countWord, capitalize, plural } from "./lib/counts"
 import { getEmbedUrl, isPdfUrl } from "./lib/url"
-import { findCourseMatches } from "./lib/gameData"
 import type { GroupKey } from "./types"
 import { initialGroupMaps, groupMapsReducer } from "./state"
-import { loadProgress, saveProgress, hasProgress } from "./lib/progress"
+import {
+  loadProgress,
+  saveProgress,
+  clearProgress,
+  hasProgress,
+} from "./lib/progress"
 import { useWinCelebration } from "./hooks/useWinCelebration"
 import { usePuzzlePickerRows } from "./hooks/usePuzzlePickerRows"
 import { useDateSet } from "./hooks/useDateSet"
@@ -20,7 +24,12 @@ import { FinalCode } from "./components/FinalCode"
 import type { FinalCodeSlot } from "./components/FinalCode"
 import { MitConnection } from "./components/MitConnection"
 import { HowToPlay } from "./components/HowToPlay"
-import { StarIcon } from "./components/icons"
+import {
+  StarIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  RestartIcon,
+} from "./components/icons"
 import {
   PuzzleRiddle,
   PuzzleEmoji,
@@ -32,7 +41,6 @@ import { PuzzleMap } from "./components/puzzles/PuzzleMap"
 import { PuzzleImage } from "./components/puzzles/PuzzleImage"
 import {
   FullFrame,
-  GameLink,
   SecondaryButton,
   GameRoot,
   ConfettiLayer,
@@ -47,18 +55,12 @@ import {
   BoardSubhead,
   BoardSide,
   BoardControls,
-  BoardControlsMeta,
   SolvedPill,
   SolvedPillText,
-  LearnLink,
   Stack,
   SmallLabel,
   LoadingBody,
   InfoPanel,
-  OcwBody,
-  OcwHeading,
-  OcwNote,
-  OcwList,
   FactEmbed,
   FactVideo,
 } from "./styled"
@@ -106,16 +108,6 @@ export default function Game() {
   // Every puzzle is on screen at once, so a retry message belongs to the
   // puzzle that produced it rather than the board as a whole.
   const [messages, setMessages] = useState<Partial<Record<GroupKey, string>>>({})
-  const [showScrambleOCWList, setShowScrambleOCWList] = useState(false)
-  const [scrambleOCWLoading, setScrambleOCWLoading] = useState(false)
-  const [scrambleMatches, setScrambleMatches] = useState<
-    Array<{ title: string; url: string }>
-  >([])
-  const [showRiddleOCWList, setShowRiddleOCWList] = useState(false)
-  const [riddleOCWLoading, setRiddleOCWLoading] = useState(false)
-  const [riddleMatches, setRiddleMatches] = useState<
-    Array<{ title: string; url: string }>
-  >([])
   const confettiPieces = useMemo(
     () =>
       Array.from({ length: CONFETTI_PIECE_COUNT }, (_, i) => ({
@@ -157,7 +149,6 @@ export default function Game() {
     canGoNextSet,
     goPrevDay,
     goNextDay,
-    goCurrentSet,
   } = useDateSet({
     pickerRows,
     pickerLoading,
@@ -229,6 +220,13 @@ export default function Game() {
     [symbol, wordsByGroup],
   )
 
+  // Everything that is about the attempt rather than the answers: retry
+  // messages and the celebration.
+  function clearAttemptState() {
+    setMessages({})
+    resetCelebration()
+  }
+
   function resetAll() {
     // Snapshot the outgoing day's progress so returning to it restores the
     // solved puzzles. The actual restore happens in the selectedDate effect.
@@ -238,16 +236,20 @@ export default function Game() {
         symbol: symbolRef.current,
       })
     }
-    setMessages({})
-    setShowScrambleOCWList(false)
-    setScrambleOCWLoading(false)
-    setScrambleMatches([])
-    setShowRiddleOCWList(false)
-    setRiddleOCWLoading(false)
-    setRiddleMatches([])
-    resetCelebration()
+    clearAttemptState()
   }
   resetAllRef.current = resetAll
+
+  // Start the set on screen again from scratch. Unlike leaving a set, this
+  // discards the answers rather than saving them, and forgets the stored
+  // progress so a reload doesn't bring the solved state back.
+  function startSetOver() {
+    dispatchGroups({ type: "resetAll" })
+    dispatchGroups({ type: "resetHints" })
+    setSymbol("")
+    clearAttemptState()
+    clearProgress(selectedDateKey)
+  }
   const toggleHint = React.useCallback(
     (group: GroupKey) => {
       dispatchGroups({
@@ -258,44 +260,6 @@ export default function Game() {
     },
     [activeHints],
   )
-
-  // Show OCW list for the Scramble word when its final-code slot is clicked
-  const handleScrambleClick = async () => {
-    if (!wordsByGroup.scramble) return
-    if (showScrambleOCWList) {
-      setShowScrambleOCWList(false)
-      return
-    }
-    setScrambleOCWLoading(true)
-    setShowScrambleOCWList(true)
-    try {
-      setScrambleMatches(
-        await findCourseMatches(wordsByGroup.scramble, assetBasePath),
-      )
-    } catch {
-      setScrambleMatches([])
-    }
-    setScrambleOCWLoading(false)
-  }
-
-  // Show OCW list for the Riddle word when its final-code slot is clicked
-  const handleRiddleClick = async () => {
-    if (!wordsByGroup.riddle) return
-    if (showRiddleOCWList) {
-      setShowRiddleOCWList(false)
-      return
-    }
-    setRiddleOCWLoading(true)
-    setShowRiddleOCWList(true)
-    try {
-      setRiddleMatches(
-        await findCourseMatches(wordsByGroup.riddle || "", assetBasePath),
-      )
-    } catch {
-      setRiddleMatches([])
-    }
-    setRiddleOCWLoading(false)
-  }
 
   const setGroupInput = (group: GroupKey) => (value: string) => {
     dispatchGroups({ type: "setInput", group, value })
@@ -412,15 +376,8 @@ export default function Game() {
 
   const { isCelebrating, resetCelebration } = useWinCelebration({ allSolved })
 
-  // A solved code word can be explored: clicking its slot lists the OCW
-  // courses that mention it. Only the word puzzles have such a list.
-  const slotClickHandlers: Partial<Record<GroupKey, () => void>> = {
-    riddle: handleRiddleClick,
-    scramble: handleScrambleClick,
-  }
   const finalCodeSlots: FinalCodeSlot[] = activeGroups.map((group, idx) => {
     const word = solvedWord(group)
-    const onClick = slotClickHandlers[group]
     return {
       key: `${group}-${idx}`,
       label: PROGRESS_LABELS[group],
@@ -432,7 +389,6 @@ export default function Game() {
             ),
           }
         : {}),
-      ...(onClick && word ? { onClick } : {}),
     }
   })
 
@@ -647,78 +603,25 @@ export default function Game() {
                   </FinalCode>
                 )}
 
-                {/* OCW matches for a solved code word, opened from its slot */}
-                {showRiddleOCWList && (
-                  <InfoPanel>
-                    <SmallLabel>List of OCW Courses</SmallLabel>
-                    <OcwBody>
-                      <OcwHeading>
-                        Courses mentioning "{wordsByGroup.riddle || ""}"
-                      </OcwHeading>
-                      {riddleOCWLoading && <OcwNote>Loading…</OcwNote>}
-                      {!riddleOCWLoading && riddleMatches.length === 0 && (
-                        <OcwNote>No courses found.</OcwNote>
-                      )}
-                      <OcwList>
-                        {riddleMatches.map((c, i) => (
-                          <li key={i}>
-                            <GameLink
-                              href={c.url}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              {c.title}
-                            </GameLink>
-                          </li>
-                        ))}
-                      </OcwList>
-                    </OcwBody>
-                  </InfoPanel>
-                )}
-                {showScrambleOCWList && (
-                  <InfoPanel>
-                    <SmallLabel>List of OCW Courses</SmallLabel>
-                    <OcwBody>
-                      <OcwHeading>
-                        Courses mentioning "{wordsByGroup.scramble || ""}"
-                      </OcwHeading>
-                      {scrambleOCWLoading && <OcwNote>Loading…</OcwNote>}
-                      {!scrambleOCWLoading && scrambleMatches.length === 0 && (
-                        <OcwNote>No courses found.</OcwNote>
-                      )}
-                      <OcwList>
-                        {scrambleMatches.map((c, i) => (
-                          <li key={i}>
-                            <GameLink
-                              href={c.url}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              {c.title}
-                            </GameLink>
-                          </li>
-                        ))}
-                      </OcwList>
-                    </OcwBody>
-                  </InfoPanel>
-                )}
               </Stack>
             </BoardCard>
 
             <BoardControls>
-              <BoardControlsMeta>
-                Puzzle date - {formatDateKey(selectedDate)}
-              </BoardControlsMeta>
               <SecondaryButton onClick={goPrevDay} disabled={!previousSetDate}>
+                <ChevronLeftIcon />
                 Previous Set
               </SecondaryButton>
               <SecondaryButton onClick={goNextDay} disabled={!canGoNextSet}>
                 Next Set
+                <ChevronRightIcon />
               </SecondaryButton>
-              <SecondaryButton onClick={goCurrentSet} disabled={!currentSetDate}>
-                Current
+              <SecondaryButton
+                onClick={startSetOver}
+                disabled={activeGroups.length === 0}
+              >
+                <RestartIcon />
+                Start Over
               </SecondaryButton>
-              <LearnLink href="#/learn">Learn to play</LearnLink>
             </BoardControls>
           </BoardMain>
 

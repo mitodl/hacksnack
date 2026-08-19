@@ -1,5 +1,5 @@
 // The game loads several static assets at runtime (images, the puzzle data
-// JSON, the OCW course CSV and the pdf.js worker). When published as a library
+// JSON and the pdf.js worker). When published as a library
 // we can't serve those ourselves, so the consuming app hosts them and tells us
 // where via the `assetBasePath` prop on <HackSnackGame>.
 //

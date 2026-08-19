@@ -11,7 +11,6 @@ import {
   FinalSlotsRow,
   FinalSlots,
   FinalSlot,
-  FinalSlotButton,
   FinalLock,
 } from "../styled"
 
@@ -19,8 +18,6 @@ export type FinalCodeSlot = {
   key: string
   /** The solved code word, or undefined while its puzzle is unsolved. */
   word?: string
-  /** Set when the solved word can be explored (it lists OCW courses). */
-  onClick?: () => void
   label: string
 }
 
@@ -57,23 +54,13 @@ export function FinalCode({
           <FinalSlots>
             {slots.map((slot) => (
               <FinalSlot key={slot.key} $filled={!!slot.word}>
-                {slot.word && slot.onClick ? (
-                  <FinalSlotButton
-                    type="button"
-                    onClick={slot.onClick}
-                    title={`OCW courses mentioning ${slot.word}`}
-                  >
-                    {slot.word}
-                  </FinalSlotButton>
-                ) : (
-                  <span
-                    aria-label={
-                      slot.word ? undefined : `${slot.label} not solved yet`
-                    }
-                  >
-                    {slot.word || "- - - - -"}
-                  </span>
-                )}
+                <span
+                  aria-label={
+                    slot.word ? undefined : `${slot.label} not solved yet`
+                  }
+                >
+                  {slot.word || "- - - - -"}
+                </span>
               </FinalSlot>
             ))}
           </FinalSlots>

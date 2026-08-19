@@ -40,7 +40,7 @@ export default () => <HackSnackGame />
 
 ## Static assets
 
-The game fetches images, the puzzle data JSON, the OCW course CSV and the pdf.js
+The game fetches images, the puzzle data JSON and the pdf.js
 worker at runtime. Copy the bundled asset files into your app's public
 directory and they'll be served at `/games/hacksnack/...` by default:
 

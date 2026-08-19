@@ -40,6 +40,20 @@ export function saveProgress(dateKey: string, value: DateProgress): void {
   }
 }
 
+// Forget a set's progress entirely. Starting a set over has to remove the entry
+// rather than save an empty one, because the game only persists snapshots that
+// hold progress (see hasProgress) — an empty save would be skipped and the old
+// solved state would come back on the next load.
+export function clearProgress(dateKey: string): void {
+  const storage = getStorage()
+  if (!storage) return
+  try {
+    storage.removeItem(KEY_PREFIX + dateKey)
+  } catch {
+    // Ignore; persistence is best-effort.
+  }
+}
+
 // True when a snapshot holds any real progress. Used to avoid clobbering saved
 // progress with the empty initial state on mount, before it has been restored.
 export function hasProgress(value: DateProgress): boolean {

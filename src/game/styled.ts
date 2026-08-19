@@ -100,6 +100,9 @@ export const BoardContainer = styled.div({
     flexDirection: "row",
     alignItems: "flex-start",
   },
+  [theme.breakpoints.down(1140)]: {
+    gap: "32px",
+  },
 })
 
 export const BoardMain = styled.div({
@@ -277,11 +280,19 @@ export const RebusRow = styled.div({
 
 // The design sets each picture 38px tall; the operators between them are
 // smaller, so the pictures carry the clue.
+//
+// A repeated picture ("two tickets" for the plural in PHONETICS) is one token,
+// so its glyphs would otherwise render flush and read as a single smudge. The
+// tracking separates them while keeping them tighter than the gap between clue
+// elements, so they still read as one thing said twice. It applies between
+// grapheme clusters, so a joined emoji like 🧑‍🔧 is never split apart.
 export const RebusEmoji = styled.span({
   fontFamily: theme.typography.fontFamily,
   fontWeight: theme.typography.fontWeightMedium,
   fontSize: "38px",
   lineHeight: "38px",
+  letterSpacing: "8px",
+  marginRight: "-8px",
   color: theme.custom.colors.darkGray2,
 })
 
@@ -480,23 +491,6 @@ export const FinalSlot = styled.div<{ $filled?: boolean }>(({ $filled }) => ({
   whiteSpace: "nowrap",
 }))
 
-// A solved slot links out to the OCW courses that mention its code word.
-export const FinalSlotButton = styled.button({
-  background: "none",
-  border: "none",
-  padding: 0,
-  font: "inherit",
-  color: "inherit",
-  // Form controls don't inherit text-transform from the slot by default, which
-  // would leave a clickable code word in mixed case beside upper-case ones.
-  textTransform: "inherit",
-  cursor: "pointer",
-  whiteSpace: "nowrap",
-  ":hover": {
-    textDecoration: "underline",
-  },
-})
-
 export const FinalLock = styled.div({
   display: "flex",
   alignItems: "center",
@@ -610,14 +604,6 @@ export const MapBlockedMsg = styled.div({
   color: theme.custom.colors.silverGrayDark,
 })
 
-export const GameLink = styled.a({
-  color: theme.custom.colors.mitRed,
-  textDecoration: "none",
-  ":hover": {
-    textDecoration: "underline",
-  },
-})
-
 // Both image-puzzle surfaces sit in the flex column of a puzzle row and are
 // capped by a `maxWidth` the puzzle sets. Their width has to be explicit: they
 // hold nothing but background images, so left to shrink-to-fit they would
@@ -675,6 +661,9 @@ export const PuzzleTile = styled.div<{ $selected?: boolean }>(
 
 export const SecondaryButton = styled.button({
   ...theme.typography.button,
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
   padding: "8px 16px",
   borderRadius: "4px",
   cursor: "pointer",
@@ -729,7 +718,7 @@ export const LearnLink = styled.a({
 export const Stack = styled.div({
   display: "flex",
   flexDirection: "column",
-  gap: "16px",
+  gap: "24px",
 })
 
 // ---------- How to play ----------
@@ -737,6 +726,9 @@ export const BoardSide = styled.div({
   width: "100%",
   maxWidth: "344px",
   flexShrink: 0,
+  [theme.breakpoints.down("md")]: {
+    maxWidth: "100%",
+  },
 })
 
 export const SideCard = styled.div({
@@ -784,27 +776,31 @@ export const SideTerm = styled.span({
 })
 
 // ---------- Board controls ----------
-// The puzzle-date row beneath the board card.
+// The set navigation beneath the board card, on the card's own surface and
+// divided from it by a rule. Starting over is separated from the set-to-set
+// controls by pushing it to the far end.
 export const BoardControls = styled.div({
   display: "flex",
   alignItems: "center",
   flexWrap: "wrap",
   gap: "12px",
-  padding: "24px 40px 0",
+  padding: "24px 40px",
+  borderTop: `1px solid ${theme.custom.colors.lightGray2}`,
+  borderRadius: "0 0 4px 4px",
+  backgroundColor: theme.custom.colors.white,
+  boxShadow: CARD_SHADOW,
+  "& > :last-of-type": {
+    marginLeft: "auto",
+  },
   [theme.breakpoints.down("sm")]: {
-    padding: "24px 24px 0",
+    padding: "16px 24px",
+    "& > :last-of-type": {
+      marginLeft: "inherit",
+    },
   },
 })
 
-export const BoardControlsMeta = styled.div({
-  ...theme.typography.body2,
-  flex: 1,
-  minWidth: "140px",
-  color: theme.custom.colors.silverGrayDark,
-})
-
-// A secondary panel inside the board card: loading and empty states, and the
-// OCW course matches for a solved code word.
+// A secondary panel inside the board card: its loading and empty states.
 export const InfoPanel = styled.div({
   display: "flex",
   flexDirection: "column",
@@ -826,31 +822,6 @@ export const LoadingBody = styled.div({
   ...theme.typography.body2,
   marginTop: "8px",
   color: theme.custom.colors.darkGray1,
-})
-
-export const OcwBody = styled.div({
-  ...theme.typography.body2,
-  color: theme.custom.colors.darkGray1,
-})
-
-export const OcwHeading = styled.div({
-  fontWeight: theme.typography.fontWeightMedium,
-  marginBottom: "8px",
-})
-
-export const OcwNote = styled.div({
-  ...theme.typography.body3,
-  color: theme.custom.colors.silverGray,
-})
-
-export const OcwList = styled.ul({
-  listStyle: "disc",
-  listStylePosition: "inside",
-  margin: 0,
-  padding: 0,
-  display: "flex",
-  flexDirection: "column",
-  gap: "4px",
 })
 
 export const FactEmbed = styled.div({

@@ -457,7 +457,7 @@
       },
       "puzzles": {
         "rebus": {
-          "clue": "🧑‍🔧🧑‍🔧🧑‍🔧🧑‍🔧",
+          "clue": "🧑‍🔧🧑‍🔧",
           "answer": "mechanics",
           "hint": "m _ _ _ _ _ _ _ s"
         },
@@ -508,7 +508,7 @@
       },
       "puzzles": {
         "rebus": {
-          "clue": "📱 + 🥅 + 🎫",
+          "clue": "📱 + 🥅 + 🎫🎫",
           "answer": "phonetics",
           "hint": "phone _ _ _ _"
         },

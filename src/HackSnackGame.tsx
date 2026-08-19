@@ -8,7 +8,7 @@ import { GoogleMapsApiKeyProvider } from "./game/GoogleMapsContext"
 export interface HackSnackGameProps {
   /**
    * Base URL path under which the game's static assets (images, puzzle JSON,
-   * OCW course CSV and the pdf.js worker) are hosted by your app.
+   * and the pdf.js worker) are hosted by your app.
    *
    * Defaults to `"/games/hacksnack"`. Use the bundled `hacksnack-copy-assets`
    * script to copy the asset files into your public directory.
