@@ -100,6 +100,9 @@ export const BoardContainer = styled.div({
     flexDirection: "row",
     alignItems: "flex-start",
   },
+  [theme.breakpoints.down(1140)]: {
+    gap: "32px",
+  },
 })
 
 export const BoardMain = styled.div({
@@ -277,11 +280,19 @@ export const RebusRow = styled.div({
 
 // The design sets each picture 38px tall; the operators between them are
 // smaller, so the pictures carry the clue.
+//
+// A repeated picture ("two tickets" for the plural in PHONETICS) is one token,
+// so its glyphs would otherwise render flush and read as a single smudge. The
+// tracking separates them while keeping them tighter than the gap between clue
+// elements, so they still read as one thing said twice. It applies between
+// grapheme clusters, so a joined emoji like 🧑‍🔧 is never split apart.
 export const RebusEmoji = styled.span({
   fontFamily: theme.typography.fontFamily,
   fontWeight: theme.typography.fontWeightMedium,
   fontSize: "38px",
   lineHeight: "38px",
+  letterSpacing: "8px",
+  marginRight: "-8px",
   color: theme.custom.colors.darkGray2,
 })
 
@@ -707,7 +718,7 @@ export const LearnLink = styled.a({
 export const Stack = styled.div({
   display: "flex",
   flexDirection: "column",
-  gap: "16px",
+  gap: "24px",
 })
 
 // ---------- How to play ----------
@@ -715,6 +726,9 @@ export const BoardSide = styled.div({
   width: "100%",
   maxWidth: "344px",
   flexShrink: 0,
+  [theme.breakpoints.down("md")]: {
+    maxWidth: "100%",
+  },
 })
 
 export const SideCard = styled.div({
@@ -780,6 +794,9 @@ export const BoardControls = styled.div({
   },
   [theme.breakpoints.down("sm")]: {
     padding: "16px 24px",
+    "& > :last-of-type": {
+      marginLeft: "inherit",
+    },
   },
 })
 
