@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
-import type { PDFDocumentLoadingTask, PDFDocumentProxy } from "pdfjs-dist"
+import type { PDFDocumentLoadingTask } from "pdfjs-dist"
 import { PdfViewerRoot, PdfStatus } from "../styled"
 import { useAsset } from "../AssetContext"
 
@@ -17,7 +17,6 @@ export function PdfFactViewer({ url }: { url: string }) {
 
     let cancelled = false
     let loadingTask: PDFDocumentLoadingTask | null = null
-    let pdfDocument: PDFDocumentProxy | null = null
     container.replaceChildren()
     setError("")
     setStatus("Loading PDF...")
@@ -28,7 +27,7 @@ export function PdfFactViewer({ url }: { url: string }) {
 
       pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl
       loadingTask = pdfjsLib.getDocument({ url })
-      pdfDocument = await loadingTask.promise
+      const pdfDocument = await loadingTask.promise
       if (cancelled) return
 
       for (
@@ -82,8 +81,8 @@ export function PdfFactViewer({ url }: { url: string }) {
     return () => {
       cancelled = true
       container.replaceChildren()
+      // Destroying the loading task also destroys its document (pdf.js 6 removed PDFDocumentProxy.destroy).
       void loadingTask?.destroy()
-      void pdfDocument?.destroy()
     }
   }, [url, pdfWorkerUrl])
 
