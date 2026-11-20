@@ -66,5 +66,12 @@
     "vite": "^8.0.16",
     "vite-plugin-dts": "^5.0.2",
     "vitest": "^4.1.9"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "npm",
+      "version": ">=11.10.0",
+      "onFail": "error"
+    }
   }
 }
