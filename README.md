@@ -63,6 +63,6 @@ If you host them somewhere else, point the game at that location:
 
 ## Development
 
-Use Node 24 (`.nvmrc`), which ships npm 11. `.npmrc` sets `min-release-age=7`, so npm only installs package versions published at least 7 days ago. npm older than 11.10 ignores that setting, so `devEngines` in `package.json` makes it refuse to install instead.
+Use Node 24.14.1 or later (`.nvmrc`), which ships npm 11.10 or later. `.npmrc` sets `min-release-age=7`, so npm only installs package versions published at least 7 days ago. npm before 11.10 ignores that setting: `devEngines` in `package.json` makes npm 10.9 to 11.9 refuse to install (`EBADDEVENGINES`), but npm before 10.9 checks neither, so don't use Node 20. Publishing needs npm 11.10 or later too.
 
-If `npm install <package>@<exact version>` hangs, that version is probably less than 7 days old. Use `@latest` or a version range, which picks the newest version old enough, or wait until it is 7 days old.
+Asking for an exact version less than 7 days old fails with `ETARGET` ("No matching version found ... with a date before ..."). If an installed package has a peer dependency on it, npm can loop instead of failing. Either way, use `@latest` or a version range, which picks the newest version old enough, or wait until it is 7 days old.
