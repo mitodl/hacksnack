@@ -60,3 +60,9 @@ If you host them somewhere else, point the game at that location:
 | ------------------ | -------- | -------------------- | ------------------------------------------------------------------------------ |
 | `assetBasePath`    | `string` | `"/games/hacksnack"` | Base URL path where the static assets live.                                    |
 | `googleMapsApiKey` | `string` | `""`                 | Google Maps JS API key for Street View ("map") puzzles. Omit to disable them.  |
+
+## Development
+
+Use Node 24 (`.nvmrc`), which ships npm 11. `.npmrc` sets `min-release-age=7`, so npm only installs package versions published at least 7 days ago. npm older than 11.10 ignores that setting, so `devEngines` in `package.json` makes it refuse to install instead.
+
+If `npm install <package>@<exact version>` hangs, that version is probably less than 7 days old. Use `@latest` or a version range, which picks the newest version old enough, or wait until it is 7 days old.
