@@ -9,7 +9,8 @@
 //
 // If <targetDir> is omitted it defaults to "./public/games/hacksnack".
 
-import { cp, mkdir } from "node:fs/promises"
+import { copyFile, cp, mkdir } from "node:fs/promises"
+import { createRequire } from "node:module"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -25,4 +26,13 @@ try {
 } catch (err) {
   console.error("Failed to copy Hack Snack assets:", err)
   process.exit(1)
+}
+
+// pdf.js refuses a worker from a different version, so serve the worker of the
+// pdfjs-dist this package resolves to (the one the app bundles), not the copy in assets/.
+try {
+  const worker = createRequire(import.meta.url).resolve("pdfjs-dist/build/pdf.worker.mjs")
+  await copyFile(worker, resolve(target, "pdf.worker.mjs"))
+} catch (err) {
+  console.warn("Could not copy the installed pdf.js worker; using the bundled copy:", err.message)
 }
